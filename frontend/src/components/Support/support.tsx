@@ -81,7 +81,7 @@ const Support = () => {
 
       {/* FAQ BOX */}
       <Box
-        style={{ border: "1px solid black", width: "100%", height: "60vh" }}
+        style={{ border: "2px solid black", width: "100%", height: "60vh" }}
         py={10}
         px={20}
       >
