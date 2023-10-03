@@ -13,8 +13,15 @@ import {
   Space,
   Accordion,
   Button,
+  Modal,
+  Rating,
+  Textarea,
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
+import RaisedTicketTable from "../TicketTable/raisedTicketTable";
+import { useState } from "react";
+import { useForm } from "@mantine/form";
+import axios from "axios";
 
 const items = [
   { title: "Home", href: "#" },
@@ -58,9 +65,17 @@ const faq = [
   },
 ];
 const Support = () => {
+  // rate modal opened closed
+  const [rateOpened, setRateOpened] = useState(false);
+
   // generate collapsed
   const collapsed = faq.map((item, index) => (
-    <Accordion variant="separated" mt={10} transitionDuration={500}>
+    <Accordion
+      variant="separated"
+      mt={10}
+      transitionDuration={500}
+      key={item.title}
+    >
       <Accordion.Item value={item.title}>
         <Accordion.Control>
           <Group spacing={"xs"}>
@@ -68,10 +83,36 @@ const Support = () => {
             <Text color="dimmed" size={15}>{`( ${item.cetergory} )`}</Text>
           </Group>
         </Accordion.Control>
-        <Accordion.Panel>{<Text size={15}>{item.description}</Text>}</Accordion.Panel>
+        <Accordion.Panel>
+          {<Text size={15}>{item.description}</Text>}
+        </Accordion.Panel>
       </Accordion.Item>
     </Accordion>
   ));
+
+
+  // rating submit handle form
+  const ratingForm = useForm({
+    validateInputOnChange : true,
+
+    initialValues : {
+      rate : 0,
+      comment : ""
+    },
+    validate : {
+      comment : (value) => value.length < 3 ? "The comment should have at least 3 characters" : null
+    }
+  });
+
+  // handle rating submit
+  const handleRatingSubmit = async(values : {rate : number,comment : string}) =>{
+    // send request to backend
+    axios.post("http://localhost:3001/ratings/submit",values).then((res) =>{
+
+    }).catch((error) =>{
+      console.log(error)
+    })
+  } 
   return (
     <>
       {/* path showing top of the page */}
@@ -134,14 +175,83 @@ const Support = () => {
             </Stack>
           </Group>
         </Box>
-        <ScrollArea h={290} >{collapsed}</ScrollArea>
+        <ScrollArea h={290}>{collapsed}</ScrollArea>
       </Box>
 
       {/* Buttons */}
       <Group position="center" spacing={80} mt={20}>
-        <Button style={{backgroundColor : "#ffbb38",border : "1px solid black"}} radius={30} size="sm" px={30}>Raise a ticket</Button>
-        <Button style={{backgroundColor : "#ffbb38",border : "1px solid black"}} radius={30} size="sm" px={20}>Rate our Service</Button>
+        <Button
+          style={{ backgroundColor: "#ffbb38", border: "1px solid black" }}
+          radius={30}
+          size="sm"
+          px={30}
+        >
+          Raise a ticket
+        </Button>
+        <Button
+          style={{ backgroundColor: "#ffbb38", border: "1px solid black" }}
+          radius={30}
+          size="sm"
+          px={20}
+          onClick={() => setRateOpened(true)}
+        >
+          Rate our Service
+        </Button>
       </Group>
+
+      {/* Ticket Details Table */}
+      {/* <Box style={{ border: "2px solid black", width: "100%", height: "60vh" }} mt={30}> */}
+      <RaisedTicketTable />
+      {/* </Box> */}
+
+      {/* user rating modal */}
+      {/* Rate Modal */}
+      <Modal
+        opened={rateOpened}
+        onClose={() => setRateOpened(false)}
+        radius={20}
+      >
+        <form onSubmit={ratingForm.onSubmit((values) => handleRatingSubmit(values))}>
+          <Box
+            p={20}
+            style={{
+              border: "2px solid black",
+              marginBottom: 30,
+              borderRadius: 30,
+            }}
+          >
+            <Text align="center" size={30} weight={"bold"}>
+              Rate Us
+            </Text>
+            <Center>
+              <Rating
+                size="xl"
+                mt={10}
+                mb={20}
+                {...ratingForm.getInputProps("rate")}
+              />
+            </Center>
+            <Textarea
+              minRows={3}
+              maxRows={8}
+              placeholder="Enter any comment here..."
+              {...ratingForm.getInputProps("comment")}
+            />
+            <Center>
+              <Button
+                type="submit"
+                radius={30}
+                mt={20}
+                pl={20}
+                pr={20}
+                style={{ backgroundColor: "#ffbb38" }}
+              >
+                Submit your rate
+              </Button>
+            </Center>
+          </Box>
+        </form>
+      </Modal>
     </>
   );
 };
