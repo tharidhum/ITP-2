@@ -2,6 +2,7 @@ import  express  from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import dbConnect from "./configs/dbConfig.js";
+import faqRoutes from "./routes/faq.routes.js"
 
 const app = express();
 
@@ -25,6 +26,8 @@ app.use((req,res,next)=>{
 app.get('/',(req,res)=>{
     res.send("Tracking System");
 });
+
+app.use('/faq',faqRoutes);
 
 
 app.listen(PORT,()=>{
