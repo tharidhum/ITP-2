@@ -14,7 +14,7 @@ import { RefObject, useRef } from "react";
 const useStyles = createStyles((theme) => ({
     root: {
         height: '100vh',
-        backgroundColor: 'grey', // Change background color here
+        backgroundColor: 'yellow', // Change background color here
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundImage: `linear-gradient(250deg, rgba(130, 201, 30, 0) 0%, #062343 70%), url("https://unsplash.com/photos/BxgVEo_rF-o")`,
