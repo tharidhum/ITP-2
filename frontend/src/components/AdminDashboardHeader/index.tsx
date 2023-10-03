@@ -11,6 +11,7 @@ import {
   rem,
   useMantineTheme,
   createStyles,
+  Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -25,6 +26,8 @@ import {
   IconChevronDown,
   IconAlignJustified,
 } from "@tabler/icons-react";
+import { ReceivedTicketsTable } from "../ManageReceivedTickets";
+import { ManageFAQ } from "../ManageFAQ";
 
 
 // Custom Theme
@@ -35,9 +38,8 @@ const useStyles = createStyles((theme) => ({
       theme.colorScheme === "dark"
         ? theme.colors.dark[6]
         : "#ffbb38",
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? "transparent" : theme.colors.gray[2]
-    }`,
+    borderBottom: `1px solid ${theme.colorScheme === "dark" ? "transparent" : theme.colors.gray[2]
+      }`,
     // marginBottom: 120,
   },
 
@@ -117,11 +119,11 @@ const user = {
     "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80",
 };
 const tabs = [
-  { tab: "Reserved Tickets", icon: <IconAlignJustified size={10} /> },
-  { tab: "Manage FQA's", icon: null },
+  { tab: "Received Tickets", icon: <IconAlignJustified size={10} /> },
+  { tab: "Manage FAQ's", icon: null },
   { tab: "Generate Reports", icon: null },
   { tab: "Backup All Tickets", icon: null },
- 
+
 ];
 
 const AdminDashboardHeader = () => {
@@ -227,8 +229,11 @@ const AdminDashboardHeader = () => {
         >
           <Tabs.List grow>{items}</Tabs.List>
 
-          <Tabs.Panel value="Reserved Tickets">
-           
+          <Tabs.Panel value="Received Tickets">
+            <ReceivedTicketsTable />
+          </Tabs.Panel>
+          <Tabs.Panel value="Manage FAQ's">
+            <ManageFAQ />
           </Tabs.Panel>
         </Tabs>
       </Container>
