@@ -139,8 +139,8 @@ const Support = () => {
 
       {/* Buttons */}
       <Group position="center" spacing={80} mt={20}>
-        <Button style={{backgroundColor : "#ffbb38"}} radius={30} size="sm" px={30}>Raise a ticket</Button>
-        <Button style={{backgroundColor : "#ffbb38"}} radius={30} size="sm" px={20}>Rate our Service</Button>
+        <Button style={{backgroundColor : "#ffbb38",border : "1px solid black"}} radius={30} size="sm" px={30}>Raise a ticket</Button>
+        <Button style={{backgroundColor : "#ffbb38",border : "1px solid black"}} radius={30} size="sm" px={20}>Rate our Service</Button>
       </Group>
     </>
   );
