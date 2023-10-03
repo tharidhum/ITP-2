@@ -35,7 +35,7 @@ const Admin = () => {
             <Button
               variant="gradient"
               component="a"
-              href="/login/inventory/"
+              href="/admin/dashboard"
               gradient={{ from: "teal", to: "lime", deg: 105 }}
             >
               Admin 
