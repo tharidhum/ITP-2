@@ -16,7 +16,6 @@
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.22.20"
   },
-  
   "dependencies": {
     "@babel/register": "^7.22.15",
     "cors": "^2.8.5",

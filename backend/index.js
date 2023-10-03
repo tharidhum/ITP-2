@@ -3,6 +3,8 @@ import 'dotenv/config';
 import cors from 'cors';
 import dbConnect from "./configs/dbConfig.js";
 import faqRoutes from "./routes/faq.routes.js"
+import ratingRoutes from './routes/ratingRoutes.js';
+
 
 const app = express();
 
@@ -27,8 +29,11 @@ app.get('/',(req,res)=>{
     res.send("Tracking System");
 });
 
+// redirect to faq routes
 app.use('/faq',faqRoutes);
 
+// redirect to rating routes
+app.use("/rate",ratingRoutes);
 
 app.listen(PORT,()=>{
     console.log(`Server is started on port ${PORT}🚀👍`);

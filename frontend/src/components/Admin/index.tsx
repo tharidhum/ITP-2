@@ -5,6 +5,9 @@ import "aos/dist/aos.css";
 import { useEffect } from "react";
 const Admin = () => {
   useEffect(() => {
+
+    // manally Inject admin data to local storage to identify the user
+    localStorage.setItem("admin",JSON.stringify({_id : "64f96b61193f907b75cc3ae4",name : "David Peris",email : "dev@gmail.com"}));
     AOS.init();
   }, []);
 
