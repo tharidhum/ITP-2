@@ -1,5 +1,8 @@
 import { Accordion, Box, Button, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core"
 import { showNotification, updateNotification } from "@mantine/notifications";
+import FAQAPI from "../../API/faq.api";
+import { IconCheck } from "@tabler/icons-react";
+import { useForm } from "@mantine/form";
 
 
 const faq = [
@@ -38,18 +41,43 @@ const faq = [
 
 export const ManageFAQ = () => {
 
+    //declare add form
+    const addForm = useForm({
+        validateInputOnChange: true,
+        initialValues: {
+            question: "",
+            category: "",
+            answer: "",
+        },
+    });
+
+    //add function
     const addFAQ = async (values: {
         question: string;
         category: string;
         answer: string;
     }) => {
         showNotification({
-            id: "add-items",
+            id: "add-FAQ",
             loading: true,
-            title: "Adding Items record",
-            message: "Please wait while we add Items record..",
+            title: "Adding FAQ",
+            message: "Please wait while we add FAQ..",
             autoClose: false,
-          });
+        });
+        FAQAPI.addFAQ(values)
+            .then((response) => {
+                updateNotification({
+                    id: "add-FAQ",
+                    color: "teal",
+                    icon: <IconCheck />,
+                    title: "FAQ added successfully",
+                    message: "FAQ data added successfully.",
+                    //icon: <IconCheck />,
+                    autoClose: 5000,
+                });
+                addForm.reset();
+
+            })
 
     }
 
@@ -71,45 +99,52 @@ export const ManageFAQ = () => {
 
     return (
         <>
-            <div style={{ border: "2px solid black", width: "100%", height: "40vh", padding: "10px", marginTop: '100px' }}>
-                <Text fw={700} style={{ textAlign: "center" }}>Enter NEW FAQ</Text>
-                <TextInput
-                    placeholder="Enter Question"
-                    label="Question"
-                    radius="lg"
-                    withAsterisk
-                />
-                <Select
-                    data={[
-                        { label: "Customer", value: "Customer" },
-                        {
-                            label: "SUPPLIER",
-                            value: "SUPPLIER",
-                        },
-                        { label: "ARTISAN", value: "ARTISAN" },
-                    ]}
-                    searchable
-                    dropdownPosition="bottom"
-                    size="xs"
-                    radius="lg"
-                    placeholder="STAKEHOLDER TYPE"
-                    label="Category"
-                />
-                <TextInput
-                    placeholder="Enter Answer"
-                    label="Answer"
-                    radius="lg"
-                    withAsterisk
-                />
+            <form onSubmit={addForm.onSubmit((values) => addFAQ(values))}>
+                <div style={{ border: "2px solid black", width: "100%", height: "40vh", padding: "10px", marginTop: '100px' }}>
+                    <Text fw={700} style={{ textAlign: "center" }}>Enter NEW FAQ</Text>
+                    <TextInput
+                        placeholder="Enter Question"
+                        label="Question"
+                        {...addForm.getInputProps("question")}
+                        radius="lg"
+                        withAsterisk
+                        required
+                    />
+                    <Select
+                        data={[
+                            { label: "Customer", value: "Customer" },
+                            {
+                                label: "SUPPLIER",
+                                value: "SUPPLIER",
+                            },
+                            { label: "ARTISAN", value: "ARTISAN" },
+                        ]}
+                        {...addForm.getInputProps("category")}
+                        searchable
+                        dropdownPosition="bottom"
+                        size="xs"
+                        radius="lg"
+                        placeholder="STAKEHOLDER TYPE"
+                        label="Category"
+                        required
+                    />
+                    <TextInput
+                        placeholder="Enter Answer"
+                        label="Answer"
+                        {...addForm.getInputProps("answer")}
+                        radius="lg"
+                        withAsterisk
+                        required
+                    />
 
-                <Button color="yellow" radius="lg"
-                    style={{ marginLeft: "425px", marginTop: '10px' }}
-                >
-                    Submit
-                </Button>
+                    <Button color="yellow" radius="lg" type="submit"
+                        style={{ marginLeft: "425px", marginTop: '10px' }}
+                    >
+                        Submit
+                    </Button>
 
-            </div>
-
+                </div>
+            </form>
             <Box
                 style={{ border: "2px solid black", width: "100%", height: "40vh", padding: "10px", marginTop: '50px', marginBottom: '50px' }}
             >

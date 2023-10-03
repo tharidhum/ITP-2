@@ -2,7 +2,9 @@ import  express  from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import dbConnect from "./configs/dbConfig.js";
+import faqRoutes from "./routes/faq.routes.js"
 import ratingRoutes from './routes/ratingRoutes.js';
+
 
 const app = express();
 
@@ -26,6 +28,9 @@ app.use((req,res,next)=>{
 app.get('/',(req,res)=>{
     res.send("Tracking System");
 });
+
+// redirect to faq routes
+app.use('/faq',faqRoutes);
 
 // redirect to rating routes
 app.use("/rate",ratingRoutes);
