@@ -35,7 +35,7 @@ const Client = () => {
             <Button
               variant="gradient"
               component="a"
-              href="/login/inventory/"
+              href="/user/support"
               gradient={{ from: "teal", to: "lime", deg: 105 }}
             >
               Client
