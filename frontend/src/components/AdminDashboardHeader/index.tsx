@@ -1,33 +1,64 @@
 import { useState } from "react";
 import {
-  createStyles,
-  Header,
   Container,
+  Avatar,
+  UnstyledButton,
   Group,
-  Burger,
-  rem,
-  Image,
   Text,
   Menu,
-  UnstyledButton,
-  Avatar
+  Tabs,
+  Burger,
+  rem,
+  useMantineTheme,
+  createStyles,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconChevronDown, IconLogout } from "@tabler/icons-react";
+import {
+  IconLogout,
+  IconHeart,
+  IconStar,
+  IconMessage,
+  IconSettings,
+  IconPlayerPause,
+  IconTrash,
+  IconSwitchHorizontal,
+  IconChevronDown,
+  IconAlignJustified,
+} from "@tabler/icons-react";
 
+
+// Custom Theme
 const useStyles = createStyles((theme) => ({
   header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: rem(56),
-
-    [theme.fn.smallerThan("sm")]: {
-      justifyContent: "flex-start",
-    },
+    paddingTop: theme.spacing.md,
+    backgroundColor:
+      theme.colorScheme === "dark"
+        ? theme.colors.dark[6]
+        : "#ffbb38",
+    borderBottom: `1px solid ${
+      theme.colorScheme === "dark" ? "transparent" : theme.colors.gray[2]
+    }`,
+    // marginBottom: 120,
   },
 
-  links: {
+  mainSection: {
+    paddingBottom: 55,
+  },
+
+  user: {
+    color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
+    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+    borderRadius: theme.radius.sm,
+    transition: "background-color 100ms ease",
+    paddingBlock: "10px",
+
+    "&:hover": {
+      backgroundColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[8]
+          : theme.colors.yellow[2],
+    },
+
     [theme.fn.smallerThan("xs")]: {
       display: "none",
     },
@@ -39,136 +70,169 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
-  link: {
-    display: "block",
-    alignItems: "center",
-    lineHeight: 1,
-    padding: `${rem(8)} ${rem(12)}`,
-    borderRadius: theme.radius.sm,
-    textDecoration: "none",
-    color:
+  userActive: {
+    backgroundColor:
       theme.colorScheme === "dark"
-        ? theme.colors.dark[0]
-        : theme.colors.gray[7],
-    fontSize: theme.fontSizes.sm,
+        ? theme.colors.dark[8]
+        : theme.colors.yellow[2],
+  },
+  tabs: {
+    [theme.fn.smallerThan("sm")]: {
+      display: "none",
+    },
+    marginTop: -38,
+  },
+
+  tabsList: {
+    borderBottom: "0 !important",
+  },
+
+  tab: {
     fontWeight: 500,
+    height: 38,
+    backgroundColor: "transparent",
 
     "&:hover": {
       backgroundColor:
         theme.colorScheme === "dark"
-          ? theme.colors.dark[6]
-          : theme.colors.gray[0],
+          ? theme.colors.dark[5]
+          : theme.colors.yellow[2],
     },
-  },
 
-  linkActive: {
-    "&, &:hover": {
-      backgroundColor: theme.fn.variant({
-        variant: "light",
-        color: theme.primaryColor,
-      }).background,
-      color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
-        .color,
-    },
-  },
-  user: {
-    color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
-    padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
-    borderRadius: theme.radius.sm,
-    transition: "background-color 100ms ease",
-
-    "&:hover": {
+    "&[data-active]": {
       backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
+        theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
+      borderColor:
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[7]
+          : theme.colors.gray[2],
     },
-
-    [theme.fn.smallerThan("xs")]: {
-      display: "none",
-    },
-  },
-  userActive: {
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
   },
 }));
 
-const links = [
-  { label: "Received Tickets", link: "" },
-  { label: "Manage FAQ's", link: "" },
-  { label: "Backup all tickets", link: "" },
+const user = {
+  name: "Jane Spoonfighter",
+  email: "janspoon@fighter.dev",
+  image:
+    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=255&q=80",
+};
+const tabs = [
+  { tab: "Reserved Tickets", icon: <IconAlignJustified size={10} /> },
+  { tab: "Manage FQA's", icon: null },
+  { tab: "Generate Reports", icon: null },
+  { tab: "Backup All Tickets", icon: null },
+ 
 ];
 
-const AdminDashboardHeader = ({link_id} : any) => {
-
-  const [active, setActive] = useState(links[link_id].link);
-  const [userMenuOpened, setUserMenuOpened] = useState(false);
+const AdminDashboardHeader = () => {
   const { classes, cx } = useStyles();
 
-  const user = JSON.parse(localStorage.getItem('user-worker-session')!!);
+  const theme = useMantineTheme();
+  const [opened, { toggle }] = useDisclosure(false);
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
 
-  const items = links.map((link,index) => (
-    <a
-      key={link.label}
-      href={link.link}
-      className={cx(classes.link, {
-        [classes.linkActive]: active === link.link,
-      })}
-      onClick={(event) => {
-        event.preventDefault();
-        window.location.href = link.link;
-        setActive(link.link);
-      }}
-    >
-      {link.label}
-    </a>
+  const items = tabs.map((tab) => (
+    <Tabs.Tab value={tab.tab} key={tab.tab} icon={tab.icon} p={5}>
+      {tab.tab}
+    </Tabs.Tab>
   ));
+
   return (
-    <Header height={60} mb={120}>
-      <Group position="apart" px={70}>
-        {/* <Image width={200} height={50} src={logo} mt={5}/> */}
-        <Group spacing={10} className={classes.links}>
-          {items}
-        </Group>
-
-        <Menu
-            width={260}
-            position="bottom-end"
-            onClose={() => setUserMenuOpened(false)}
-            onOpen={() => setUserMenuOpened(true)}
-          >
-            <Menu.Target>
-              <UnstyledButton
-                className={cx(classes.user, {
-                  [classes.userActive]: userMenuOpened,
-                })}
-              >
-                <Group spacing={7}>
-                  {/* profile picture */}
-                  <Avatar src={null} alt="profile pic" color="indigo" radius={"lg"}></Avatar>
-
-                  <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
-                    Admin
-                  </Text>
-                  <IconChevronDown size={12} stroke={1.5} />
-                </Group>
-              </UnstyledButton>
-            </Menu.Target>
-            <Menu.Dropdown>
-              {/* <Menu.Label>{user.role === 'ADMIN'? 'Administrator' : "Worker"}</Menu.Label> */}
-              
-              <Menu.Item icon={<IconLogout size={14} stroke={1.5} />} >
-              <a
-              href="/worker/logout"
-              className={classes.link}
-              onClick={(event) => {event.preventDefault(); window.location.href = '/worker/logout'}}
+    <>
+      <div className={classes.header}>
+        <Container className={classes.mainSection}>
+          <Group position="apart">
+            {/* dashboard logo */}
+            {/* <Image
+              src={dark ? adminDashboardLogoDark : adminDashboardLogoLight}
+              width={100}
+            /> */}
+            <Burger
+              opened={opened}
+              onClick={toggle}
+              className={classes.burger}
+              size="sm"
+            />
+            <Menu
+              width={260}
+              position="bottom-end"
+              //   transition="pop-top-right"
+              onClose={() => setUserMenuOpened(false)}
+              onOpen={() => setUserMenuOpened(true)}
             >
-                  Logout
-                </a>
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-      </Group>
-    </Header>
+              <Menu.Target>
+                <UnstyledButton
+                  className={cx(classes.user, {
+                    [classes.userActive]: userMenuOpened,
+                  })}
+                >
+                  <Group spacing={7}>
+                    {/* profile picture */}
+                    <Avatar
+                      src={user.image}
+                      alt={user.name}
+                      radius="xl"
+                      size={20}
+                    />
+                    <Text weight={500} size="sm" sx={{ lineHeight: 1 }} mr={3}>
+                      {user.name}
+                    </Text>
+                    <IconChevronDown size={12} stroke={1.5} />
+                  </Group>
+                </UnstyledButton>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Label>Administrator</Menu.Label>
+                <Menu.Divider />
+                <Menu.Label>Change Theme</Menu.Label>
+
+                <Menu.Divider />
+                <Menu.Label>Settings</Menu.Label>
+                <Menu.Item icon={<IconSettings size={14} stroke={1.5} />}>
+                  Account settings
+                </Menu.Item>
+                <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
+                  <a
+                    href="/logout"
+                    style={{
+                      color: "inherit",
+                      textDecoration: "inherit",
+                    }}
+                  >
+                    Logout
+                  </a>
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Label>Danger zone</Menu.Label>
+                <Menu.Item
+                  color="red"
+                  icon={<IconTrash size={14} stroke={1.5} />}
+                >
+                  Delete account
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          </Group>
+        </Container>
+      </div>
+      <Container size="md">
+        <Tabs
+          defaultValue="Reserved Tickets"
+          variant="outline"
+          classNames={{
+            root: classes.tabs,
+            tabsList: classes.tabsList,
+            tab: classes.tab,
+          }}
+        >
+          <Tabs.List grow>{items}</Tabs.List>
+
+          <Tabs.Panel value="Reserved Tickets">
+           
+          </Tabs.Panel>
+        </Tabs>
+      </Container>
+    </>
   );
 };
 
