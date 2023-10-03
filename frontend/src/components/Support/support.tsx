@@ -17,11 +17,13 @@ import {
   Rating,
   Textarea,
 } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { IconCheck, IconSearch, IconX } from "@tabler/icons-react";
 import RaisedTicketTable from "../TicketTable/raisedTicketTable";
 import { useState } from "react";
 import { useForm } from "@mantine/form";
 import axios from "axios";
+import RatingAPI from "../../API/ratings";
+import { showNotification, updateNotification } from "@mantine/notifications";
 
 const items = [
   { title: "Home", href: "#" },
@@ -68,6 +70,9 @@ const Support = () => {
   // rate modal opened closed
   const [rateOpened, setRateOpened] = useState(false);
 
+  // user details
+  const user = JSON.parse(localStorage.getItem("user")!!);
+
   // generate collapsed
   const collapsed = faq.map((item, index) => (
     <Accordion
@@ -90,29 +95,60 @@ const Support = () => {
     </Accordion>
   ));
 
-
   // rating submit handle form
   const ratingForm = useForm({
-    validateInputOnChange : true,
+    validateInputOnChange: true,
 
-    initialValues : {
-      rate : 0,
-      comment : ""
+    initialValues: {
+      rate: 0,
+      comment: "",
     },
-    validate : {
-      comment : (value) => value.length < 3 ? "The comment should have at least 3 characters" : null
-    }
+    validate: {
+      comment: (value) =>
+        value.length < 3
+          ? "The comment should have at least 3 characters"
+          : null,
+    },
   });
 
   // handle rating submit
-  const handleRatingSubmit = async(values : {rate : number,comment : string}) =>{
+  const handleRatingSubmit = (values: { rate: number; comment: string }) => {
+    showNotification({
+      id: "submit-rate",
+      title: "Submitting....",
+      message: "We are trying to submit your ratings",
+      loading: true,
+    });
     // send request to backend
-    axios.post("http://localhost:3001/ratings/submit",values).then((res) =>{
+    RatingAPI.submitUserRating({ ...values, userId: user._id })
+      .then((res) => {
+        updateNotification({
+          id: "submit-rate",
+          title: "Your rating recorded",
+          message: "Thank you for submmitting record form",
+          autoClose: 1800,
+          color: "teal",
+          icon: <IconCheck />,
+        });
 
-    }).catch((error) =>{
-      console.log(error)
-    })
-  } 
+        // close the rating modal
+        setRateOpened(false);
+
+        // reset the rating form
+        ratingForm.reset();
+      })
+      .catch((error) => {
+        updateNotification({
+          id: "submit-rate",
+          title: "Something went wrong",
+          message: "There was an error while submitting your ratings",
+          autoClose: 1800,
+          color: "red",
+          icon: <IconX />,
+        });
+      });
+  };
+
   return (
     <>
       {/* path showing top of the page */}
@@ -122,7 +158,7 @@ const Support = () => {
 
       {/* FAQ BOX */}
       <Box
-        style={{ border: "2px solid black", width: "100%", height: "60vh" }}
+        style={{ border: "2px solid black", width: "100%", height: "500px" }}
         py={10}
         px={20}
       >
@@ -175,7 +211,7 @@ const Support = () => {
             </Stack>
           </Group>
         </Box>
-        <ScrollArea h={290}>{collapsed}</ScrollArea>
+        <ScrollArea h={350}>{collapsed}</ScrollArea>
       </Box>
 
       {/* Buttons */}
@@ -211,7 +247,9 @@ const Support = () => {
         onClose={() => setRateOpened(false)}
         radius={20}
       >
-        <form onSubmit={ratingForm.onSubmit((values) => handleRatingSubmit(values))}>
+        <form
+          onSubmit={ratingForm.onSubmit((values) => handleRatingSubmit(values))}
+        >
           <Box
             p={20}
             style={{
