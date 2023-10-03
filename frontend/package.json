@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@mantine/core": "^6.0.21",
+    "@mantine/form": "^6.0.21",
     "@mantine/notifications": "^6.0.21",
     "@mantine/styles": "^6.0.21",
     "@tabler/icons-react": "^2.38.0",
@@ -16,6 +17,7 @@
     "@types/react": "^18.2.24",
     "@types/react-dom": "^18.2.8",
     "aos": "^2.3.4",
+    "axios": "^1.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.16.0",

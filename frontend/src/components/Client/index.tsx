@@ -5,6 +5,16 @@ import "aos/dist/aos.css";
 import { useEffect } from "react";
 const Client = () => {
   useEffect(() => {
+    // manally Inject client data to local storage to identify the user
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        _id: "651a735e59e4ccc157c562fa",
+        name: "Vidura",
+        email: "vidura@gmail.com",
+      })
+    );
+
     AOS.init();
   }, []);
 
