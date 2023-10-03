@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon — exec babel-node index.js"
@@ -15,6 +16,7 @@
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.22.20"
   },
+  
   "dependencies": {
     "@babel/register": "^7.22.15",
     "cors": "^2.8.5",
