@@ -1,7 +1,7 @@
-import  express  from "express";
+import  express  from 'express';
 import 'dotenv/config';
 import cors from 'cors';
-import dbConnect from "./configs/dbconfig";
+import dbConnect from "./configs/dbConfig.js";
 
 const app = express();
 
