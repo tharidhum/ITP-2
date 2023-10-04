@@ -16,6 +16,7 @@ import { IconSearch, IconTicketOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import TicketAPI from "../../API/tickets";
+import Footer from "../footer";
 
 const RaisedTicketTable = () => {
   // get user details from the localstorage
