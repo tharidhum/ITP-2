@@ -10,7 +10,7 @@ const Client = () => {
       "user",
       JSON.stringify({
         _id: "651a735e59e4ccc157c562fa",
-        name: "Vidura",
+        name: "Vidura Chathuranga",
         email: "vidura@gmail.com",
       })
     );
