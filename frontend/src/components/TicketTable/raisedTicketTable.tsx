@@ -2,15 +2,14 @@ import {
   Badge,
   Box,
   Center,
-  Container,
   Group,
   Modal,
   ScrollArea,
   Select,
-  Space,
   Table,
   Text,
   TextInput,
+  Textarea,
   Title,
 } from "@mantine/core";
 import { IconSearch, IconTicketOff } from "@tabler/icons-react";
@@ -34,11 +33,40 @@ const RaisedTicketTable = () => {
     TicketAPI.getAllTicketsByUser(user._id).then((res) => res.data)
   );
 
+  // open ticket window
+  const [ticketOpened, setTicketOpened] = useState(false);
+
+  // specific ticket details
+  const [ticketInfo, setTicketInfo] = useState({
+    ticketId: "",
+    date: "",
+    time: "",
+    category: "",
+    subject: "",
+    message: "",
+    status: "",
+  });
   // generate tickets table body
   const rows =
     data.length > 0 ? (
       data.map((ticket: any) => (
-        <tr key={ticket._id}>
+        <tr
+          key={ticket._id}
+          onClick={() => {
+            setTicketInfo({
+              ticketId: ticket.ticketId,
+              date: new Date(ticket.date).toLocaleDateString("en-CA"),
+              time: ticket.time,
+              category: ticket.category,
+              subject: ticket.subject,
+              message: ticket.message,
+              status: ticket.status,
+            });
+
+            // open ticket modal
+            setTicketOpened(true);
+          }}
+        >
           <td>
             {
               <Badge
@@ -77,7 +105,23 @@ const RaisedTicketTable = () => {
       data.map((ticket: any) => {
         if (ticket.status === "PENDING") {
           return (
-            <tr key={ticket._id}>
+            <tr
+              key={ticket._id}
+              onClick={() => {
+                setTicketInfo({
+                  ticketId: ticket.ticketId,
+                  date: new Date(ticket.date).toLocaleDateString("en-CA"),
+                  time: ticket.time,
+                  category: ticket.category,
+                  subject: ticket.subject,
+                  message: ticket.message,
+                  status: ticket.status,
+                });
+
+                // open ticket modal
+                setTicketOpened(true);
+              }}
+            >
               <td>
                 {
                   <Badge color={"orange"} variant="light">
@@ -115,7 +159,23 @@ const RaisedTicketTable = () => {
       data.map((ticket: any) => {
         if (ticket.status === "COMPLETE") {
           return (
-            <tr key={ticket._id}>
+            <tr
+              key={ticket._id}
+              onClick={() => {
+                setTicketInfo({
+                  ticketId: ticket.ticketId,
+                  date: new Date(ticket.date).toLocaleDateString("en-CA"),
+                  time: ticket.time,
+                  category: ticket.category,
+                  subject: ticket.subject,
+                  message: ticket.message,
+                  status: ticket.status,
+                });
+
+                // open ticket modal
+                setTicketOpened(true);
+              }}
+            >
               <td>
                 {
                   <Badge color={"teal"} variant="light">
@@ -149,6 +209,63 @@ const RaisedTicketTable = () => {
 
   return (
     <>
+      {/* Ticket Modal */}
+      <Modal
+        opened={ticketOpened}
+        onClose={() => setTicketOpened(false)}
+        size={"50%"}
+      >
+        <Modal.Header>
+          <Text weight={"bold"} size={30}>
+            Ticket Details
+          </Text>
+          <Badge
+            size="lg"
+            color={ticketInfo.status === "COMPLETE" ? "teal" : "orange"}
+          >
+            {ticketInfo.status === "COMPLETE" ? "COMPLETE" : "PENDING"}
+          </Badge>
+        </Modal.Header>
+
+        <Modal.Body>
+          <TextInput
+            mb={10}
+            label={"Ticket ID"}
+            readOnly
+            value={ticketInfo.ticketId}
+          />
+          <TextInput
+            mt={20}
+            mb={10}
+            label={"Raised date and Time"}
+            readOnly
+            value={`${ticketInfo.date}  ${ticketInfo.time}`}
+          />
+          <TextInput
+            mt={20}
+            mb={10}
+            label={"Category"}
+            readOnly
+            value={ticketInfo.category}
+          />
+          <TextInput
+            mt={20}
+            mb={10}
+            label={"Subject"}
+            readOnly
+            value={ticketInfo.subject}
+          />
+          <Textarea
+            mt={20}
+            mb={10}
+            minRows={2}
+            maxRows={5}
+            label={"Message"}
+            readOnly
+            value={ticketInfo.message}
+          />
+        </Modal.Body>
+      </Modal>
       <Box
         style={{
           border: "2px solid black",
