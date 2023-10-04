@@ -10,6 +10,8 @@ import {
 } from "@mantine/core";
 // import LoginPage from "../Login";
 import { RefObject, useRef } from "react";
+import Footer from "../../components/footer";
+
 
 const useStyles = createStyles((theme) => ({
     root: {
@@ -135,6 +137,7 @@ const LandingPage = () => {
 
             {/* <LoginPage ref={login}/> */}
             <ManageTicket ref={login}/>
+            <Footer />
         </>
     );
 };
