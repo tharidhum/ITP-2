@@ -1,6 +1,7 @@
 import {
   Badge,
   Box,
+  Center,
   Container,
   Group,
   Modal,
@@ -12,123 +13,139 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { IconSearch } from "@tabler/icons-react";
+import { IconSearch, IconTicketOff } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import TicketAPI from "../../API/tickets";
 
 const RaisedTicketTable = () => {
+  // get user details from the localstorage
+  const user = JSON.parse(localStorage.getItem("user")!!);
+
   // ticket table tickets filter by status
   const [status, setStatus] = useState("");
 
-  const tickets = [
-    {
-      _id: "adadsdqg123sadatyut11yasdd",
-      status: "PENDING",
-      ticketId: "#TKS0002",
-      Date: "2023/08/28",
-      time: "00:05 AM",
-      category: "BILLING & PAYMENT",
-      subject: "CARD DETAILS NOT TAKING ACTION",
-    },
-    {
-      _id: "adadsdqadadaadasdjkhag12311yasdd",
-      status: "COMPLETE",
-      ticketId: "#TKS0002",
-      Date: "2023/08/30",
-      time: "00:05 AM",
-      category: "BILLING & PAYMENT",
-      subject: "CARD DETAILS NOT TAKING ACTION",
-    },
-    {
-      _id: "adadsdqbvvcbcaadaddadasdag12311yasdd",
-      status: "COMPLETE",
-      ticketId: "#TKS0002",
-      Date: "2023/08/30",
-      time: "00:05 AM",
-      category: "BILLING & PAYMENT",
-      subject: "CARD DETAILS NOT TAKING ACTION",
-    },
-    {
-      _id: "adadsdqadadzczasddfsag12311yasdd",
-      status: "PENDING",
-      ticketId: "#TKS0002",
-      Date: "2023/08/30",
-      time: "00:05 AM",
-      category: "BILLING & PAYMENT",
-      subject: "CARD DETAILS NOT TAKING ACTION",
-    },
-    {
-      _id: "adadssadczdqadadasdasfsdg12311yasdd",
-      status: "COMPLETE",
-      ticketId: "#TKS0002",
-      Date: "2023/08/30",
-      time: "00:05 AM",
-      category: "BILLING & PAYMENT",
-      subject: "CARD DETAILS NOT TAKING ACTION",
-    },
-  ];
+  // user react query to fetch the the raised ticket data
+  const {
+    error,
+    isLoading,
+    data = [],
+  } = useQuery(["raisedTickets"], () =>
+    TicketAPI.getAllTicketsByUser(user._id).then((res) => res.data)
+  );
 
   // generate tickets table body
-  const rows = tickets.map((ticket) => (
-    <tr key={ticket._id}>
-      <td>
-        {
-          <Badge
-            color={ticket.status === "COMPLETE" ? "teal" : "orange"}
-            variant="light"
-          >
-            {ticket.status}
-          </Badge>
+  const rows =
+    data.length > 0 ? (
+      data.map((ticket: any) => (
+        <tr key={ticket._id}>
+          <td>
+            {
+              <Badge
+                color={ticket.status === "COMPLETE" ? "teal" : "orange"}
+                variant="light"
+              >
+                {ticket.status}
+              </Badge>
+            }
+          </td>
+          <td>{ticket.ticketId}</td>
+          <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
+          <td>{ticket.time}</td>
+          <td>{ticket.category}</td>
+          <td>{ticket.subject}</td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan={6}>
+          <>
+            <Center mt={60}>
+              <IconTicketOff size={100} color="gray" opacity={0.2} />
+            </Center>
+            <Text align="center" weight={"bold"} size={30} pb={70}>
+              You haven't raised ticket yet!
+            </Text>
+          </>
+        </td>
+      </tr>
+    );
+
+  // filtering pending tickets only
+  const pendingTickets =
+    data.length > 0 ? (
+      data.map((ticket: any) => {
+        if (ticket.status === "PENDING") {
+          return (
+            <tr key={ticket._id}>
+              <td>
+                {
+                  <Badge color={"orange"} variant="light">
+                    {ticket.status}
+                  </Badge>
+                }
+              </td>
+              <td>{ticket.ticketId}</td>
+              <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
+              <td>{ticket.time}</td>
+              <td>{ticket.category}</td>
+              <td>{ticket.subject}</td>
+            </tr>
+          );
         }
-      </td>
-      <td>{ticket.ticketId}</td>
-      <td>{ticket.Date}</td>
-      <td>{ticket.time}</td>
-      <td>{ticket.category}</td>
-      <td>{ticket.subject}</td>
-    </tr>
-  ));
+      })
+    ) : (
+      <tr>
+        <td colSpan={6}>
+          <>
+            <Center mt={60}>
+              <IconTicketOff size={100} color="gray" opacity={0.2} />
+            </Center>
+            <Text align="center" weight={"bold"} size={30} pb={70}>
+              You haven't raised ticket yet!
+            </Text>
+          </>
+        </td>
+      </tr>
+    );
 
-  const pendingTickets = tickets.map((ticket) => {
-    if (ticket.status === "PENDING") {
-      return (
-        <tr key={ticket._id}>
-          <td>
-            {
-              <Badge color={"orange"} variant="light">
-                {ticket.status}
-              </Badge>
-            }
-          </td>
-          <td>{ticket.ticketId}</td>
-          <td>{ticket.Date}</td>
-          <td>{ticket.time}</td>
-          <td>{ticket.category}</td>
-          <td>{ticket.subject}</td>
-        </tr>
-      );
-    }
-  });
-
-  const completeTickets = tickets.map((ticket) => {
-    if (ticket.status === "COMPLETE") {
-      return (
-        <tr key={ticket._id}>
-          <td>
-            {
-              <Badge color={"teal"} variant="light">
-                {ticket.status}
-              </Badge>
-            }
-          </td>
-          <td>{ticket.ticketId}</td>
-          <td>{ticket.Date}</td>
-          <td>{ticket.time}</td>
-          <td>{ticket.category}</td>
-          <td>{ticket.subject}</td>
-        </tr>
-      );
-    }
-  });
+  // filtering successing tickets only
+  const completeTickets =
+    data.length > 0 ? (
+      data.map((ticket: any) => {
+        if (ticket.status === "COMPLETE") {
+          return (
+            <tr key={ticket._id}>
+              <td>
+                {
+                  <Badge color={"teal"} variant="light">
+                    {ticket.status}
+                  </Badge>
+                }
+              </td>
+              <td>{ticket.ticketId}</td>
+              <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
+              <td>{ticket.time}</td>
+              <td>{ticket.category}</td>
+              <td>{ticket.subject}</td>
+            </tr>
+          );
+        }
+      })
+    ) : (
+      <tr>
+        <td colSpan={6}>
+          <>
+            <Center mt={60}>
+              <IconTicketOff size={100} color="gray" opacity={0.2} />
+            </Center>
+            <Text align="center" weight={"bold"} size={30} pb={70}>
+              You haven't raised ticket yet!
+            </Text>
+          </>
+        </td>
+      </tr>
+    );
 
   return (
     <>

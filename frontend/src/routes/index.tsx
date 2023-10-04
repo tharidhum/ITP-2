@@ -6,6 +6,7 @@ import AdminDashboard from "../pages/AdminDashboard";
 import UserTicketPage from "../pages/ticketPage/userTicketPage";
 import { Notifications } from "@mantine/notifications";
 import { MantineProvider } from '@mantine/core';
+import RaiseTicketForm from "../components/raiseTicketForm/raiseTicketForm";
 
 const AllRoutes = () => {
   const client = new QueryClient(); //config query client
@@ -19,6 +20,7 @@ const AllRoutes = () => {
               <Route path="/" element={<LandingPage />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/user/support" element={<UserTicketPage />} />
+              <Route path="/raiseaticket" element={<RaiseTicketForm/>}/>
             </Routes>
           </Router>
         </QueryClientProvider>

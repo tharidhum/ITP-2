@@ -4,6 +4,7 @@ import cors from 'cors';
 import dbConnect from "./configs/dbConfig.js";
 import faqRoutes from "./routes/faq.routes.js"
 import ratingRoutes from './routes/ratingRoutes.js';
+import ticketsRoutes from './routes/ticket.routes.js';
 
 
 const app = express();
@@ -34,6 +35,9 @@ app.use('/faq',faqRoutes);
 
 // redirect to rating routes
 app.use("/rate",ratingRoutes);
+
+// redirect to ticket routes
+app.use('/tickets',ticketsRoutes);
 
 app.listen(PORT,()=>{
     console.log(`Server is started on port ${PORT}🚀👍`);

@@ -24,6 +24,8 @@ import { useForm } from "@mantine/form";
 import axios from "axios";
 import RatingAPI from "../../API/ratings";
 import { showNotification, updateNotification } from "@mantine/notifications";
+import { useNavigate } from "react-router-dom";
+import RaiseTicketForm from "../raiseTicketForm/raiseTicketForm";
 
 const items = [
   { title: "Home", href: "#" },
@@ -72,6 +74,9 @@ const Support = () => {
 
   // user details
   const user = JSON.parse(localStorage.getItem("user")!!);
+
+  // submit ticket form state
+  const [ticketForm, setTicketForm] = useState(false);
 
   // generate collapsed
   const collapsed = faq.map((item, index) => (
@@ -151,145 +156,159 @@ const Support = () => {
 
   return (
     <>
-      {/* path showing top of the page */}
-      <Breadcrumbs mt={"lg"} mb={"xl"}>
-        {items}
-      </Breadcrumbs>
+      {/* Submit ticket form */}
+      {ticketForm === true ? (
+        <RaiseTicketForm />
+      ) : (
+        <>
+          {/* path showing top of the page */}
+          <Breadcrumbs mt={"lg"} mb={"xl"}>
+            {items}
+          </Breadcrumbs>
 
-      {/* FAQ BOX */}
-      <Box
-        style={{ border: "2px solid black", width: "100%", height: "500px" }}
-        py={10}
-        px={20}
-      >
-        <Box style={{ backgroundColor: "#f1f1f1", padding: 20 }}>
-          <Group position="center">
-            <Stack>
-              <Box
-                style={{
-                  backgroundColor: "#ffbb38",
-                  border: "1px solid black",
-                  borderRadius: "20px",
-                  paddingLeft: 1,
-                  paddingRight: 1,
-                }}
-              >
-                <Text size={"sm"} align="center">
-                  FAQ ! We have Answers ( most of the times ! )
-                </Text>
-              </Box>
-              <Group spacing={"md"}>
-                <TextInput
-                  radius={20}
-                  icon={<IconSearch size={15} />}
-                  placeholder="Search..."
-                  size="xs"
-                />
-                <Select
-                  data={[
-                    { label: "General", value: "General" },
-                    {
-                      label: "Account And Security",
-                      value: "Account And Security",
-                    },
-                    { label: "Delivery", value: "Delivery" },
-                    {
-                      label: "Order and Shipping",
-                      value: "Order and Shipping",
-                    },
-                    {
-                      label: "Products and inventory",
-                      value: "Products and inventory",
-                    },
-                  ]}
-                  searchable
-                  dropdownPosition="bottom"
-                  size="xs"
-                  placeholder="Category"
-                />
-              </Group>
-            </Stack>
-          </Group>
-        </Box>
-        <ScrollArea h={350}>{collapsed}</ScrollArea>
-      </Box>
-
-      {/* Buttons */}
-      <Group position="center" spacing={80} mt={20}>
-        <Button
-          style={{ backgroundColor: "#ffbb38", border: "1px solid black" }}
-          radius={30}
-          size="sm"
-          px={30}
-        >
-          Raise a ticket
-        </Button>
-        <Button
-          style={{ backgroundColor: "#ffbb38", border: "1px solid black" }}
-          radius={30}
-          size="sm"
-          px={20}
-          onClick={() => setRateOpened(true)}
-        >
-          Rate our Service
-        </Button>
-      </Group>
-
-      {/* Ticket Details Table */}
-      {/* <Box style={{ border: "2px solid black", width: "100%", height: "60vh" }} mt={30}> */}
-      <RaisedTicketTable />
-      {/* </Box> */}
-
-      {/* user rating modal */}
-      {/* Rate Modal */}
-      <Modal
-        opened={rateOpened}
-        onClose={() => setRateOpened(false)}
-        radius={20}
-      >
-        <form
-          onSubmit={ratingForm.onSubmit((values) => handleRatingSubmit(values))}
-        >
+          {/* FAQ BOX */}
           <Box
-            p={20}
             style={{
               border: "2px solid black",
-              marginBottom: 30,
-              borderRadius: 30,
+              width: "100%",
+              height: "500px",
             }}
+            py={10}
+            px={20}
           >
-            <Text align="center" size={30} weight={"bold"}>
-              Rate Us
-            </Text>
-            <Center>
-              <Rating
-                size="xl"
-                mt={10}
-                mb={20}
-                {...ratingForm.getInputProps("rate")}
-              />
-            </Center>
-            <Textarea
-              minRows={3}
-              maxRows={8}
-              placeholder="Enter any comment here..."
-              {...ratingForm.getInputProps("comment")}
-            />
-            <Center>
-              <Button
-                type="submit"
-                radius={30}
-                mt={20}
-                pl={20}
-                pr={20}
-                style={{ backgroundColor: "#ffbb38" }}
-              >
-                Submit your rate
-              </Button>
-            </Center>
+            <Box style={{ backgroundColor: "#f1f1f1", padding: 20 }}>
+              <Group position="center">
+                <Stack>
+                  <Box
+                    style={{
+                      backgroundColor: "#ffbb38",
+                      border: "1px solid black",
+                      borderRadius: "20px",
+                      paddingLeft: 1,
+                      paddingRight: 1,
+                    }}
+                  >
+                    <Text size={"sm"} align="center">
+                      FAQ ! We have Answers ( most of the times ! )
+                    </Text>
+                  </Box>
+                  <Group spacing={"md"}>
+                    <TextInput
+                      radius={20}
+                      icon={<IconSearch size={15} />}
+                      placeholder="Search..."
+                      size="xs"
+                    />
+                    <Select
+                      data={[
+                        { label: "General", value: "General" },
+                        {
+                          label: "Account And Security",
+                          value: "Account And Security",
+                        },
+                        { label: "Delivery", value: "Delivery" },
+                        {
+                          label: "Order and Shipping",
+                          value: "Order and Shipping",
+                        },
+                        {
+                          label: "Products and inventory",
+                          value: "Products and inventory",
+                        },
+                      ]}
+                      searchable
+                      dropdownPosition="bottom"
+                      size="xs"
+                      placeholder="Category"
+                    />
+                  </Group>
+                </Stack>
+              </Group>
+            </Box>
+            <ScrollArea h={350}>{collapsed}</ScrollArea>
           </Box>
-        </form>
-      </Modal>
+
+          {/* Buttons */}
+          <Group position="center" spacing={80} mt={20}>
+            <Button
+              style={{ backgroundColor: "#ffbb38", border: "1px solid black" }}
+              radius={30}
+              size="sm"
+              px={30}
+              onClick={() => setTicketForm(true)}
+            >
+              Raise a ticket
+            </Button>
+            <Button
+              style={{ backgroundColor: "#ffbb38", border: "1px solid black" }}
+              radius={30}
+              size="sm"
+              px={20}
+              onClick={() => setRateOpened(true)}
+            >
+              Rate our Service
+            </Button>
+          </Group>
+
+          {/* Ticket Details Table */}
+          {/* <Box style={{ border: "2px solid black", width: "100%", height: "60vh" }} mt={30}> */}
+          <RaisedTicketTable />
+          {/* </Box> */}
+
+          {/* user rating modal */}
+          {/* Rate Modal */}
+          <Modal
+            opened={rateOpened}
+            onClose={() => setRateOpened(false)}
+            radius={20}
+          >
+            <form
+              onSubmit={ratingForm.onSubmit((values) =>
+                handleRatingSubmit(values)
+              )}
+            >
+              <Box
+                p={20}
+                style={{
+                  border: "2px solid black",
+                  marginBottom: 30,
+                  borderRadius: 30,
+                }}
+              >
+                <Text align="center" size={30} weight={"bold"}>
+                  Rate Us
+                </Text>
+                <Center>
+                  <Rating
+                    size="xl"
+                    mt={10}
+                    mb={20}
+                    {...ratingForm.getInputProps("rate")}
+                  />
+                </Center>
+                <Textarea
+                  minRows={3}
+                  maxRows={8}
+                  placeholder="Enter any comment here..."
+                  {...ratingForm.getInputProps("comment")}
+                />
+                <Center>
+                  <Button
+                    type="submit"
+                    radius={30}
+                    mt={20}
+                    pl={20}
+                    pr={20}
+                    style={{ backgroundColor: "#ffbb38" }}
+                  >
+                    Submit your rate
+                  </Button>
+                </Center>
+              </Box>
+            </form>
+          </Modal>
+        </>
+      )}
     </>
   );
 };
