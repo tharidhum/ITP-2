@@ -1,7 +1,7 @@
-import { Accordion, Box, Button, Group, Modal, ScrollArea, Select, Text, TextInput } from "@mantine/core"
+import { Accordion, Box, Button, Center, Group, Modal, ScrollArea, Select, Text, TextInput } from "@mantine/core"
 import { showNotification, updateNotification } from "@mantine/notifications";
 import FAQAPI from "../../API/faq.api";
-import { IconCheck, IconX } from "@tabler/icons-react";
+import { IconCheck, IconTicketOff, IconX } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -170,7 +170,7 @@ export const ManageFAQ = () => {
                     />
                     <Select
                         data={[
-                            { label: "Customer", value: "Customer" },
+                            { label: "CUSTOMER", value: "CUSTOMER" },
                             {
                                 label: "SUPPLIER",
                                 value: "SUPPLIER",
@@ -183,7 +183,7 @@ export const ManageFAQ = () => {
                         size="xs"
                         radius="lg"
                         placeholder="STAKEHOLDER TYPE"
-                        label="Category"
+                        label="CATEGORY"
                         required
                     />
                     <TextInput
@@ -216,7 +216,7 @@ export const ManageFAQ = () => {
                     />
                     <Select
                         data={[
-                            { label: "Customer", value: "Customer" },
+                            { label: "CUSTOMER", value: "CUSTOMER" },
                             {
                                 label: "SUPPLIER",
                                 value: "SUPPLIER",
@@ -229,7 +229,7 @@ export const ManageFAQ = () => {
                         size="xs"
                         radius="lg"
                         placeholder="STAKEHOLDER TYPE"
-                        label="Category"
+                        label="CATEGORY"
                         required
                     />
                     <TextInput
@@ -255,46 +255,60 @@ export const ManageFAQ = () => {
                 <Box style={{ backgroundColor: "#f1f1f1", padding: 20 }}>
                     <Text fw={700} style={{ textAlign: "center" }}>Existing FAQs</Text>
                 </Box>
-                <ScrollArea h={200} >
-                    {data.map((faqItem: any) => (
-                        <Accordion variant="separated" mt={10} transitionDuration={500} key={faqItem.question}>
-                            <Accordion.Item value={faqItem.question}>
-                                <Accordion.Control>
-                                    <Group spacing={"xs"}>
-                                        <Text size={15} weight={"bold"}>{`${faqItem.question}`}</Text>
-                                        <Text color="dimmed" size={15}>{`( ${faqItem.category} )`}</Text>
+                <ScrollArea h={200}>
+                    {data.length === 0 ? ( // Check if data array is empty
+                        <div style={{ textAlign: "center", padding: "20px" }}>
+                            <>
+                                <Center mt={1}>
+                                    <IconTicketOff size={100} color="gray" opacity={0.2} />
+                                </Center>
+                                <Text align="center" weight={"bold"} size={30} pb={70}>
+                                    NO FAQs yet!
+                                </Text>
+                            </>
+                        </div>
+                    ) : (
+                        data.map((faqItem: any) => (
+                            <Accordion variant="separated" mt={10} transitionDuration={500} key={faqItem.question}>
+                                <Accordion.Item value={faqItem.question}>
+                                    <Accordion.Control>
+                                        <Group spacing={"xs"}>
+                                            <Text size={15} weight={"bold"}>{`${faqItem.question}`}</Text>
+                                            <Text color="dimmed" size={15}>{`( ${faqItem.category} )`}</Text>
 
-                                        {/* button edit */}
-                                        <Button color="red" radius="xl" size="xs"
-                                            onClick={() => {
-                                                editForm.setValues({
-                                                    _id: faqItem._id,
-                                                    question: faqItem.question,
-                                                    category: faqItem.category,
-                                                    answer: faqItem.answer,
-                                                });
-                                                setEditOpened(true);
-                                            }}
-                                        >
-                                            Edit
-                                        </Button>
+                                            {/* button edit */}
+                                            <Button color="red" radius="xl" size="xs"
+                                                onClick={() => {
+                                                    editForm.setValues({
+                                                        _id: faqItem._id,
+                                                        question: faqItem.question,
+                                                        category: faqItem.category,
+                                                        answer: faqItem.answer,
+                                                    });
+                                                    setEditOpened(true);
+                                                }}
+                                            >
+                                                Edit
+                                            </Button>
 
-                                        {/* button delete */}
-                                        <Button color="red" radius="xl" size="xs"
-                                            onClick={() => deleteFAQ(faqItem._id)}
-                                        >
-                                            Delete
-                                        </Button>
-                                    </Group>
-                                </Accordion.Control>
-                                <Accordion.Panel>
-                                    <Text size={15}>{faqItem.answer}</Text>
-                                </Accordion.Panel>
-                            </Accordion.Item>
-                        </Accordion>
-                    ))}
+                                            {/* button delete */}
+                                            <Button color="red" radius="xl" size="xs"
+                                                onClick={() => deleteFAQ(faqItem._id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </Group>
+                                    </Accordion.Control>
+                                    <Accordion.Panel>
+                                        <Text size={15}>{faqItem.answer}</Text>
+                                    </Accordion.Panel>
+                                </Accordion.Item>
+                            </Accordion>
+                        ))
+                    )}
                 </ScrollArea>
             </Box>
+
         </>
     )
 }
