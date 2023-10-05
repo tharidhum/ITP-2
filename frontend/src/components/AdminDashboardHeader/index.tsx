@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { ReceivedTicketsTable } from "../ManageReceivedTickets";
 import { ManageFAQ } from "../ManageFAQ";
+import Logo from "../../assets/logo1.png"
 
 
 // Custom Theme
@@ -145,10 +146,7 @@ const AdminDashboardHeader = () => {
         <Container className={classes.mainSection}>
           <Group position="apart">
             {/* dashboard logo */}
-            {/* <Image
-              src={dark ? adminDashboardLogoDark : adminDashboardLogoLight}
-              width={100}
-            /> */}
+            
             <Burger
               opened={opened}
               onClick={toggle}

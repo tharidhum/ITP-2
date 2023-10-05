@@ -31,7 +31,7 @@ export function ReceivedTicketsTable() {
 
   return (
 
-    <div style={{ border: "2px solid black", width: "100%", height: "60vh", padding: "10px", marginTop: '100px' }}>
+    <div style={{ border: "2px solid black", width: "100%", height: "60vh", padding: "10px", marginTop: '50px' }}>
       <Group spacing={"md"}>
         <TextInput
           radius={20}
