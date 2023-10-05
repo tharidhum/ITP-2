@@ -146,7 +146,8 @@ const AdminDashboardHeader = () => {
         <Container className={classes.mainSection}>
           <Group position="apart">
             {/* dashboard logo */}
-            
+            <Image src={Logo} width={50} ml={50} />
+
             <Burger
               opened={opened}
               onClick={toggle}

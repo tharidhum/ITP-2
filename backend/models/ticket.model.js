@@ -37,7 +37,11 @@ const ticketSchema = new mongoose.Schema({
     time : {
         type : String,
         required : true,
-    }
+    },
+    response : {
+        type : String,
+        default : ""
+    },
 },{timestamps : true});
 
 

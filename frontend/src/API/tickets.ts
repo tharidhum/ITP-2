@@ -16,6 +16,17 @@ class TicketAPI {
     static getAllTicketsByUser(userId : string){
         return axios.get(`http://localhost:3001/tickets/${userId}`);
     }
+
+    //get all tickets by admin
+    static getAllTicketsByAdmin(){
+
+        return axios.get(`http://localhost:3001/tickets/raised`);
+    }
+
+    static submitResponse(values:{ _id: string,message: string}){
+        return axios.put(`http://localhost:3001/tickets/response/${values._id}`,values);
+
+    }
 }
 
 export default TicketAPI;
