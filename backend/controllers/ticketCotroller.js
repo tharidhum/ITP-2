@@ -83,15 +83,15 @@ export const getAllTicketsByUser = async (req, res) => {
 export const getAllTicketsByAdmin = async (req, res) => {
 
   try {
-    const raisedTicket = await Ticket.find({ status: "PENDING" });
+    const raisedTicket = await Ticket.find();
 
-    // Map through the raisedTicket array and create a new array with updated status
-    const updatedTickets = raisedTicket.map((ticket) => ({
-      ...ticket.toObject(), // Create a shallow copy of the ticket
-      status: "NEW", // Update the status to "NEW"
-    }));
+    // // Map through the raisedTicket array and create a new array with updated status
+    // const updatedTickets = raisedTicket.map((ticket) => ({
+    //   ...ticket.toObject(), // Create a shallow copy of the ticket
+    //   status: "NEW", // Update the status to "NEW"
+    // }));
 
-    res.status(200).json(updatedTickets);
+    res.status(200).json(raisedTicket);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch Tickets", error });
   }

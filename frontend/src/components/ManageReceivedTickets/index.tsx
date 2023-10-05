@@ -46,6 +46,10 @@ export function ReceivedTicketsTable() {
     { initialData: [] }
   );
 
+  // Filter PENDING and COMPLETE tickets
+  const pendingTickets = data.filter((ticket: any) => ticket.status === "PENDING");
+  const completeTickets = data.filter((ticket: any) => ticket.status === "COMPLETE");
+
   //submit response
   const submitTicketResponse = async (values: {
     _id: string,
@@ -75,10 +79,10 @@ export function ReceivedTicketsTable() {
       });
   }
 
-  // generate tickets table body
-  const rows =
-    data.length > 0 ? (
-      data.map((tickets: any) => (
+  // generate tickets table body for pending tickets
+  const pendingRows =
+    pendingTickets.length > 0 ? (
+      pendingTickets.map((tickets: any) => (
         <tr
           key={tickets._id}
           onClick={() => {
@@ -122,6 +126,44 @@ export function ReceivedTicketsTable() {
             </Center>
             <Text align="center" weight={"bold"} size={30} pb={70}>
               You haven't raised ticket yet!
+            </Text>
+          </>
+        </td>
+      </tr>
+    );
+
+  //generate table for completed tickets
+  const completeRows =
+    completeTickets.length > 0 ? (
+      completeTickets.map((tickets: any) => (
+        <tr
+          key={tickets._id}
+          >
+          <td>
+            {
+              <Badge
+                color={tickets.status === "COMPLETE" ? "teal" : "orange"}
+                variant="light"
+              >
+                {tickets.status}
+              </Badge>
+            }
+          </td>
+          <td>{tickets.ticketId}</td>
+          <td>{new Date(tickets.date).toLocaleDateString("en-CA")}</td>
+          <td>{tickets.time}</td>
+          <td>{tickets.category}</td>
+        </tr>
+      ))
+    ) : (
+      <tr>
+        <td colSpan={6}>
+          <>
+            <Center mt={60}>
+              <IconTicketOff size={100} color="gray" opacity={0.2} />
+            </Center>
+            <Text align="center" weight={"bold"} size={30} pb={70}>
+              You haven't completed ticket yet!
             </Text>
           </>
         </td>
@@ -196,7 +238,7 @@ export function ReceivedTicketsTable() {
             <Group spacing={"xs"}>
               <Text>Message: </Text>
               <Textarea
-                placeholder="Enter a detailed message related to your issue"
+                placeholder="Enter a detailed message related issue"
                 maxRows={8}
                 minRows={5}
                 w={"80%"}
@@ -224,7 +266,11 @@ export function ReceivedTicketsTable() {
           </Modal.Body>
         </Modal>
       </ScrollArea>
+
+      {/* new tickets table */}
       <div style={{ border: "2px solid black", width: "100%", height: "60vh", padding: "10px", marginTop: '50px' }}>
+        <Text fw={700} style={{ textAlign: "center" }}>New Received Tickets</Text>
+
         <Group spacing={"md"}>
           <TextInput
             radius={20}
@@ -287,7 +333,79 @@ export function ReceivedTicketsTable() {
                 <th>CATEGORY</th>
               </tr>
             </thead>
-            <tbody>{rows}</tbody>
+            <tbody>{pendingRows}</tbody>
+          </Table>
+        </ScrollArea>
+      </div>
+
+
+      {/* completed ticket table */}
+      <div style={{ border: "2px solid black", width: "100%", height: "60vh", padding: "10px", marginTop: '50px', marginBottom: "50px" }}>
+        <Text fw={700} style={{ textAlign: "center" }}>Completed Tickets</Text>
+
+        <Group spacing={"md"}>
+          <TextInput
+            radius={20}
+            icon={<IconSearch size={15} />}
+            placeholder="Search..."
+            size="xs"
+            style={{
+              width: '300px', // Increase length
+              padding: '10px', // Add margin to the bottom
+            }}
+          />
+          <Select
+            data={[
+              { label: "Customer", value: "Customer" },
+              {
+                label: "SUPPLIER",
+                value: "SUPPLIER",
+              },
+              { label: "ARTISAN", value: "ARTISAN" },
+            ]}
+            searchable
+            dropdownPosition="bottom"
+            size="xs"
+            placeholder="STAKEHOLDER TYPE"
+          />
+
+          <Select
+            data={[
+              { label: "NEW", value: "NEW" },
+              {
+                label: "OLD",
+                value: "OLD",
+              },
+            ]}
+            searchable
+            dropdownPosition="bottom"
+            size="xs"
+            placeholder="TICKET STATUS"
+          />
+
+          <Select
+            data={[
+
+            ]}
+            searchable
+            dropdownPosition="bottom"
+            size="xs"
+            placeholder="Raised Date"
+          />
+        </Group>
+        <ScrollArea h={350}>
+          <Table striped highlightOnHover withBorder withColumnBorders>
+            <thead>
+              <tr>
+                <th>TICKET STATUS</th>
+                <th>TICKET ID</th>
+                <th>DATE</th>
+                <th>TIMER</th>
+                {/* <th>STAKEHOLDER TYPE</th> */}
+                <th>CATEGORY</th>
+              </tr>
+            </thead>
+            <tbody>{completeRows}</tbody>
           </Table>
         </ScrollArea>
       </div>
