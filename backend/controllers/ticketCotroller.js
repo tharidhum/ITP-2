@@ -35,13 +35,13 @@ export const generateNextTicketId = async (req, res) => {
   }
 };
 
-export const raiseTicket = async(req, res) => {
+export const raiseTicket = async (req, res) => {
   // get all the details from the request body
   const { ticketId, date, issueId, subject, message, category, userId } =
     req.body;
 
-    //get current time ticket is submitted
-    const time = new Date().toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
+  //get current time ticket is submitted
+  const time = new Date().toLocaleTimeString().replace(/(.*)\D\d+/, '$1');
   try {
     // save the details in the databse
     const savedTicket = await Ticket.create({
@@ -65,18 +65,53 @@ export const raiseTicket = async(req, res) => {
 
 
 // get all tickets by user
-export const getAllTicketsByUser = async(req,res) =>{
-    const {userId} = req.params;
+export const getAllTicketsByUser = async (req, res) => {
+  const { userId } = req.params;
+  try {
 
+    // get all tickets by userId
+    const prevRaisedTickets = await Ticket.find({ userId });
 
-    try{
+    res.status(200).json(prevRaisedTickets);
 
-        // get all tickets by userId
-        const prevRaisedTickets = await Ticket.find({userId});
-
-        res.status(200).json(prevRaisedTickets);
-        
-    }catch(error){
-        res.status(500).json({error:error.message});
-    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
+
+//get all tickets by admin
+export const getAllTicketsByAdmin = async (req, res) => {
+
+  try {
+    const raisedTicket = await Ticket.find();
+
+    // // Map through the raisedTicket array and create a new array with updated status
+    // const updatedTickets = raisedTicket.map((ticket) => ({
+    //   ...ticket.toObject(), // Create a shallow copy of the ticket
+    //   status: "NEW", // Update the status to "NEW"
+    // }));
+
+    res.status(200).json(raisedTicket);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch Tickets", error });
+  }
+};
+
+export const submitResponse = async (req, res) => {
+  const _id = req.params.id;
+
+  try {
+    const updateFields = {
+      response: req.body.message,
+      status : "COMPLETE"
+    };
+
+    console.log(updateFields);
+    const updatedRes = await Ticket.findByIdAndUpdate(_id,updateFields,{ new: true });
+
+    res.status(201).json(updatedRes);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to add Response", error });
+  }
+};
+

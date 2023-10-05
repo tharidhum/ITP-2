@@ -22,11 +22,22 @@ class FAQAPI {
   };
 
   //delete faq
-  static deleteFAQ = (_id : string) => {
-    console.log(_id)
+  static deleteFAQ = (_id: string) => {
     return axios.delete(`${BASE_URL}/faq/delete/${_id}`);
   };
 
+  //update battery details
+  static updateFAQ = (values: {
+    _id: string;
+    question: string;
+    category: string;
+    answer: string;
+  }) => {
+    return axios.put(`${BASE_URL}/faq/update/${values._id}`, values,);
+  };
+
 };
+
+
 
 export default FAQAPI;

@@ -16,7 +16,7 @@ const faqSchema = new mongoose.Schema({
         required : true,
     },
     
-},{timeStamps : true});
+},{timestamps : true});
 
 
 const Faq = mongoose.model("faqs",faqSchema);

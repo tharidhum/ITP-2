@@ -1,12 +1,15 @@
-import { Accordion, Box, Button, Group, ScrollArea, Select, Text, TextInput } from "@mantine/core"
+import { Accordion, Box, Button, Group, Modal, ScrollArea, Select, Text, TextInput } from "@mantine/core"
 import { showNotification, updateNotification } from "@mantine/notifications";
 import FAQAPI from "../../API/faq.api";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { useForm } from "@mantine/form";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 
 export const ManageFAQ = () => {
+    const [editOpened, setEditOpened] = useState(false);
+
 
     //use react query and fetch FAQ data
     const {
@@ -31,6 +34,18 @@ export const ManageFAQ = () => {
             answer: "",
         },
     });
+
+    //declare edit form
+    const editForm = useForm({
+        validateInputOnChange: true,
+        initialValues: {
+            _id: "",
+            question: "",
+            category: "",
+            answer: "",
+        },
+    });
+
 
     //add function
     const addFAQ = async (values: {
@@ -63,7 +78,7 @@ export const ManageFAQ = () => {
     };
 
     //delete faq
-    const deleteFAQ = (_id : string) => {
+    const deleteFAQ = (_id: string) => {
         FAQAPI.deleteFAQ(_id)
             .then((res) => {
                 showNotification({
@@ -89,8 +104,105 @@ export const ManageFAQ = () => {
             });
     }
 
+    //update Item  function
+    const updateFAQ = async (values: {
+        _id: string;
+        question: string;
+        category: string;
+        answer: string;
+    }) => {
+        showNotification({
+            id: "update-FAQ",
+            loading: true,
+            title: "Updating FAQ record",
+            message: "Please wait while we update FAQ record..",
+            autoClose: false,
+        });
+        FAQAPI.updateFAQ(values)
+            .then((response) => {
+                updateNotification({
+                    id: "update-FAQ",
+                    color: "teal",
+                    icon: <IconCheck />,
+                    title: "FAQ updated successfully",
+                    message: "FAQ data updated successfully.",
+                    //icon: <IconCheck />,
+                    autoClose: 5000,
+                });
+                editForm.reset();
+                setEditOpened(false);
+
+                //getting updated items from database
+                refetch();
+            })
+            .catch((error) => {
+                updateNotification({
+                    id: "update-FAQ",
+                    color: "red",
+                    title: "FAQ updatimg failed",
+                    icon: <IconX />,
+                    message: "We were unable to update the FAQ",
+                    // icon: <IconAlertTriangle />,
+                    autoClose: 5000,
+                });
+            });
+    };
+
     return (
         <>
+            {/* faq edit model */}
+            <Modal
+                opened={editOpened}
+                onClose={() => {
+                    editForm.reset();
+                    setEditOpened(false);
+                }}
+                title="Update FAQ Records"
+            >
+                <form onSubmit={editForm.onSubmit((values) => updateFAQ(values))}>
+                    <TextInput
+                        placeholder="Enter Question"
+                        label="Question"
+                        {...editForm.getInputProps("question")}
+                        radius="lg"
+                        withAsterisk
+                        required
+                    />
+                    <Select
+                        data={[
+                            { label: "Customer", value: "Customer" },
+                            {
+                                label: "SUPPLIER",
+                                value: "SUPPLIER",
+                            },
+                            { label: "ARTISAN", value: "ARTISAN" },
+                        ]}
+                        {...editForm.getInputProps("category")}
+                        searchable
+                        dropdownPosition="bottom"
+                        size="xs"
+                        radius="lg"
+                        placeholder="STAKEHOLDER TYPE"
+                        label="Category"
+                        required
+                    />
+                    <TextInput
+                        placeholder="Enter Answer"
+                        label="Answer"
+                        {...editForm.getInputProps("answer")}
+                        radius="lg"
+                        withAsterisk
+                        required
+                    />
+
+                    <Button color="yellow" radius="lg" type="submit"
+                        style={{ marginLeft: "170px", marginTop: '10px' }}
+                    >
+                        Save
+                    </Button>
+                </form>
+            </Modal>
+
             <form onSubmit={addForm.onSubmit((values) => addFAQ(values))}>
                 <div style={{ border: "2px solid black", width: "100%", height: "40vh", padding: "10px", marginTop: '50px' }}>
                     <Text fw={700} style={{ textAlign: "center" }}>Enter NEW FAQ</Text>
@@ -153,10 +265,20 @@ export const ManageFAQ = () => {
                                         <Text color="dimmed" size={15}>{`( ${faqItem.category} )`}</Text>
 
                                         {/* button edit */}
-                                        <Button color="red" radius="xl" size="xs">
+                                        <Button color="red" radius="xl" size="xs"
+                                            onClick={() => {
+                                                editForm.setValues({
+                                                    _id: faqItem._id,
+                                                    question: faqItem.question,
+                                                    category: faqItem.category,
+                                                    answer: faqItem.answer,
+                                                });
+                                                setEditOpened(true);
+                                            }}
+                                        >
                                             Edit
                                         </Button>
-                                        
+
                                         {/* button delete */}
                                         <Button color="red" radius="xl" size="xs"
                                             onClick={() => deleteFAQ(faqItem._id)}
