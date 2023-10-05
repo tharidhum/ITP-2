@@ -194,7 +194,7 @@ const AdminDashboardHeader = () => {
                 </Menu.Item>
                 <Menu.Item icon={<IconLogout size={14} stroke={1.5} />}>
                   <a
-                    href="/logout"
+                    href="/"
                     style={{
                       color: "inherit",
                       textDecoration: "inherit",

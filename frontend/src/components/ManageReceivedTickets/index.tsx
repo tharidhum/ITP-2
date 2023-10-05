@@ -125,7 +125,7 @@ export function ReceivedTicketsTable() {
               <IconTicketOff size={100} color="gray" opacity={0.2} />
             </Center>
             <Text align="center" weight={"bold"} size={30} pb={70}>
-              You haven't raised ticket yet!
+              No raised tickets yet!
             </Text>
           </>
         </td>
@@ -138,7 +138,7 @@ export function ReceivedTicketsTable() {
       completeTickets.map((tickets: any) => (
         <tr
           key={tickets._id}
-          >
+        >
           <td>
             {
               <Badge
@@ -159,11 +159,11 @@ export function ReceivedTicketsTable() {
       <tr>
         <td colSpan={6}>
           <>
-            <Center mt={60}>
+            <Center mt={50}>
               <IconTicketOff size={100} color="gray" opacity={0.2} />
             </Center>
             <Text align="center" weight={"bold"} size={30} pb={70}>
-              You haven't completed ticket yet!
+              NO completed tickets yet!
             </Text>
           </>
         </td>
@@ -224,45 +224,53 @@ export function ReceivedTicketsTable() {
               mt={20}
               mb={10}
               minRows={2}
-              maxRows={5}
+              autosize
               label={"Message"}
               readOnly
               value={ticketInfo.message}
             />
           </Modal.Body>
+
+
           <Modal.Body>
-
-
-            <Text fw={700} style={{ textAlign: "center" }}>WRITE RESPONSE</Text>
-
+            {/* ... (other fields) */}
             <Group spacing={"xs"}>
-              <Text>Message: </Text>
+              <Text>Response</Text>
               <Textarea
-                placeholder="Enter a detailed message related issue"
+                placeholder="Enter a detailed Response related to the issue"
                 maxRows={8}
-                minRows={5}
-                w={"80%"}
-                ml={68}
+                mb={10}
+                autosize
+                w={"100%"}
                 required
                 {...ticketResponseSubmitForm.getInputProps("message")}
               />
             </Group>
+
+            {ticketResponseSubmitForm.values.message === '' && (
+              <div style={{ color: 'red', marginTop: '10px' }}>
+                Response cannot be empty
+              </div>
+            )}
 
             <Button
               type="submit"
               radius={30}
               style={{ backgroundColor: "#ffbb38", padding: "10px", marginTop: "10px", marginLeft: "235px" }}
               onClick={() => {
-                setTicketOpened(false);
-                submitTicketResponse({
-                  _id: ticketInfo._id,
-                  message: ticketResponseSubmitForm.values.message,
-                });
+                if (!ticketResponseSubmitForm.values.message) {
+                  // Display an error message within the modal
+                } else {
+                  setTicketOpened(false);
+                  submitTicketResponse({
+                    _id: ticketInfo._id,
+                    message: ticketResponseSubmitForm.values.message,
+                  });
+                }
               }}
             >
               Submit Response
             </Button>
-
           </Modal.Body>
         </Modal>
       </ScrollArea>
@@ -284,7 +292,7 @@ export function ReceivedTicketsTable() {
           />
           <Select
             data={[
-              { label: "Customer", value: "Customer" },
+              { label: "CUSTOMER", value: "CUSTOMER" },
               {
                 label: "SUPPLIER",
                 value: "SUPPLIER",
@@ -299,10 +307,10 @@ export function ReceivedTicketsTable() {
 
           <Select
             data={[
-              { label: "NEW", value: "NEW" },
+              { label: "PENDING", value: "PENDING" },
               {
-                label: "OLD",
-                value: "OLD",
+                label: "COMPLETE",
+                value: "COMPLETE",
               },
             ]}
             searchable
@@ -342,7 +350,14 @@ export function ReceivedTicketsTable() {
       {/* completed ticket table */}
       <div style={{ border: "2px solid black", width: "100%", height: "60vh", padding: "10px", marginTop: '50px', marginBottom: "50px" }}>
         <Text fw={700} style={{ textAlign: "center" }}>Completed Tickets</Text>
+        <Button
+          type="submit"
+          radius={30}
+          style={{ backgroundColor: "#ffbb38", marginTop: "1px", marginLeft: "650px" }}
 
+        >
+          Backup all Completed Tickets
+        </Button>
         <Group spacing={"md"}>
           <TextInput
             radius={20}
@@ -356,7 +371,7 @@ export function ReceivedTicketsTable() {
           />
           <Select
             data={[
-              { label: "Customer", value: "Customer" },
+              { label: "CUSTOMER", value: "CUSTOMER" },
               {
                 label: "SUPPLIER",
                 value: "SUPPLIER",
@@ -371,10 +386,10 @@ export function ReceivedTicketsTable() {
 
           <Select
             data={[
-              { label: "NEW", value: "NEW" },
+              { label: "PENDING", value: "PENDING" },
               {
-                label: "OLD",
-                value: "OLD",
+                label: "COMPLETE",
+                value: "COMPLETE",
               },
             ]}
             searchable
