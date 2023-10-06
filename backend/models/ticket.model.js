@@ -42,6 +42,10 @@ const ticketSchema = new mongoose.Schema({
         type : String,
         default : ""
     },
+    stakeHolder : {
+        type : String, 
+        required : true
+    }
 },{timestamps : true});
 
 
