@@ -26,7 +26,7 @@ const RaiseTicketForm = () => {
   // breadcrumbs items
   const items = [
     { title: "Home", href: "#" },
-    { title: "Support Service", href: "#" },
+    { title: "Support Service", href: "/user/support" },
     { title: "Raise A Ticket", href: "#" },
   ].map((item, index) => (
     <Anchor href={item.href} key={index}>
@@ -69,6 +69,7 @@ const RaiseTicketForm = () => {
       subject: "",
       message: "",
       category: "",
+      stakeHolder : ""
     },
   });
 
@@ -80,6 +81,7 @@ const RaiseTicketForm = () => {
     subject: string;
     message: string;
     category: string;
+    stakeHolder : string;
   }) => {
     TicketAPI.raiseTicket({ ...values, userId: user._id })
       .then((res) => {
@@ -95,7 +97,7 @@ const RaiseTicketForm = () => {
         setTimeout(() => {
           // refresh the page and go to the Support page
           navigate(0);
-        }, 1600);
+        }, 1000);
       })
       .catch((error) => {
         showNotification({
@@ -130,7 +132,7 @@ const RaiseTicketForm = () => {
             <Group spacing={"xs"}>
               <Text>Ticket ID:</Text>
               <TextInput
-                ml={70}
+                ml={73}
                 readOnly
                 required
                 {...ticketSubmitForm.getInputProps("ticketId")}
@@ -147,7 +149,7 @@ const RaiseTicketForm = () => {
             </Group>
           </Group>
 
-          <Group spacing={"xs"}>
+          <Group spacing={"xs"} mb={20}>
             <Text>Issue Category :</Text>
             <Select
               size="sm"
@@ -169,13 +171,13 @@ const RaiseTicketForm = () => {
                 },
               ]}
               ml={27}
-              mb={20}
+              
               required
               {...ticketSubmitForm.getInputProps("category")}
             />
           </Group>
 
-          <Group spacing={"xs"} mb={30}>
+          <Group spacing={"xs"} mb={20}>
             <Text>Issue Related ID : </Text>
             <TextInput
               placeholder="ex:ProductID, OrderID"
@@ -185,8 +187,27 @@ const RaiseTicketForm = () => {
             />
           </Group>
 
+          <Group spacing={"xs"}  mb={30}>
+            <Text>Stakeholder type :</Text>
+            <Select
+              size="sm"
+              placeholder="Select category"
+              data={[
+                { label: "Seller", value: "SELLER" },
+                {
+                  label: "Buyer",
+                  value: "BUYER",
+                },
+                { label: "Artisan", value: "ARTISAN" },
+              ]}
+              ml={13}
+              required
+              {...ticketSubmitForm.getInputProps("stakeHolder")}
+            />
+          </Group>
+
           <Group spacing={"xs"} mb={10}>
-            <Text>Subject: </Text>
+            <Text>Subject : </Text>
             <TextInput
               ml={80}
               w={"80%"}
@@ -197,7 +218,7 @@ const RaiseTicketForm = () => {
           </Group>
 
           <Group spacing={"xs"}>
-            <Text>Message: </Text>
+            <Text>Message : </Text>
             <Textarea
               placeholder="Enter a detailed message related to your issue"
               maxRows={8}

@@ -37,7 +37,7 @@ export const generateNextTicketId = async (req, res) => {
 
 export const raiseTicket = async (req, res) => {
   // get all the details from the request body
-  const { ticketId, date, issueId, subject, message, category, userId } =
+  const { ticketId, date, issueId, subject, message, category, userId,stakeHolder } =
     req.body;
 
   //get current time ticket is submitted
@@ -52,7 +52,8 @@ export const raiseTicket = async (req, res) => {
       message,
       category,
       userId,
-      time
+      time,
+      stakeHolder
     });
 
     // send success response along with saved data

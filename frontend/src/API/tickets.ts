@@ -8,7 +8,7 @@ class TicketAPI {
         return axios.get("http://localhost:3001/tickets/get/newId")
     }
 
-    static raiseTicket(values : {ticketId : string, date : string, issueId : string, subject : string,message : string, category : string,userId:string}){
+    static raiseTicket(values : {ticketId : string, date : string, issueId : string, subject : string,message : string, category : string,userId:string,stakeHolder : string}){
         return axios.post("http://localhost:3001/tickets/raise",values);
     }
 

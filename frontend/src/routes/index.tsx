@@ -13,7 +13,7 @@ const AllRoutes = () => {
   return (
     <div>
       <MantineProvider withNormalizeCSS withGlobalStyles>
-        <Notifications />
+        <Notifications position="top-right"/>
         <QueryClientProvider client={client}>
           <Router>
             <Routes>
