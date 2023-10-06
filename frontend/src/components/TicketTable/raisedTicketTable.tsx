@@ -66,6 +66,7 @@ const RaisedTicketTable = () => {
             // open ticket modal
             setTicketOpened(true);
           }}
+          style={{cursor : "pointer"}}
         >
           <td>
             {
