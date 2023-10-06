@@ -17,7 +17,12 @@ import {
   Rating,
   Textarea,
 } from "@mantine/core";
-import { IconCheck, IconSearch, IconX } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconMessage2Off,
+  IconSearch,
+  IconX,
+} from "@tabler/icons-react";
 import RaisedTicketTable from "../TicketTable/raisedTicketTable";
 import { useState } from "react";
 import { useForm } from "@mantine/form";
@@ -26,6 +31,9 @@ import RatingAPI from "../../API/ratings";
 import { showNotification, updateNotification } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
 import RaiseTicketForm from "../raiseTicketForm/raiseTicketForm";
+import { useQuery } from "@tanstack/react-query";
+import FAQAPI from "../../API/faq.api";
+import { IconTicketOff } from "@tabler/icons-react";
 
 const items = [
   { title: "Home", href: "#" },
@@ -36,22 +44,12 @@ const items = [
   </Anchor>
 ));
 
-const faq = [
-
-  {
-    title: "Can I cancel or change my order after It's been placed ?",
-    description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
-    cetergory: "Order and shopping",
-  },
-  {
-    title: "How do i know if an item is in stock ?",
-    description:
-      "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
-    cetergory: "Products and inventory",
-  },
-];
 const Support = () => {
+  // retreive data from database
+  const { data, error, isLoading } = useQuery(["FAQ"], () =>
+    FAQAPI.getAllFAQ().then((res) => res.data)
+  );
+
   // rate modal opened closed
   const [rateOpened, setRateOpened] = useState(false);
 
@@ -61,27 +59,79 @@ const Support = () => {
   // submit ticket form state
   const [ticketForm, setTicketForm] = useState(false);
 
+  // select Category
+  const [category, setCategory] = useState("");
+
   // generate collapsed
-  const collapsed = faq.map((item, index) => (
-    <Accordion
-      variant="separated"
-      mt={10}
-      transitionDuration={500}
-      key={item.title}
-    >
-      <Accordion.Item value={item.title}>
-        <Accordion.Control>
-          <Group spacing={"xs"}>
-            <Text size={15} weight={"bold"}>{`${item.title}`}</Text>
-            <Text color="dimmed" size={15}>{`( ${item.cetergory} )`}</Text>
-          </Group>
-        </Accordion.Control>
-        <Accordion.Panel>
-          {<Text size={15}>{item.description}</Text>}
-        </Accordion.Panel>
-      </Accordion.Item>
-    </Accordion>
-  ));
+  const collapsed = Array.isArray(data) ? (
+    data.map((item: any, index: any) => (
+      <Accordion
+        variant="separated"
+        mt={10}
+        transitionDuration={500}
+        key={item.question}
+      >
+        <Accordion.Item value={item.question}>
+          <Accordion.Control>
+            <Group spacing={"xs"}>
+              <Text size={15} weight={"bold"}>{`${item.question}`}</Text>
+              <Text color="dimmed" size={15}>{`( ${item.category} )`}</Text>
+            </Group>
+          </Accordion.Control>
+          <Accordion.Panel>
+            {<Text size={15}>{item.answer}</Text>}
+          </Accordion.Panel>
+        </Accordion.Item>
+      </Accordion>
+    ))
+  ) : (
+    <>
+      <Center mt={60}>
+        <IconMessage2Off size={100} color="gray" opacity={0.2} />
+      </Center>
+      <Text align="center" weight={"bold"} size={30} pb={70}>
+        There are no FAQs!
+      </Text>
+    </>
+  );
+
+  const filerByCategory = Array.isArray(data) ? (
+    data.map((item: any, index: any) => {
+      if (item.category.toLowerCase() === category.toLowerCase()) {
+        return (
+          <Accordion
+            variant="separated"
+            mt={10}
+            transitionDuration={500}
+            key={item.question}
+          >
+            <Accordion.Item value={item.question}>
+              <Accordion.Control>
+                <Group spacing={"xs"}>
+                  <Text size={15} weight={"bold"}>{`${item.question}`}</Text>
+                  <Text color="dimmed" size={15}>{`( ${item.category} )`}</Text>
+                </Group>
+              </Accordion.Control>
+              <Accordion.Panel>
+                {<Text size={15}>{item.answer}</Text>}
+              </Accordion.Panel>
+            </Accordion.Item>
+          </Accordion>
+        );
+      }
+    })
+  ) : (
+    <>
+      <Center mt={60}>
+        <IconTicketOff size={100} color="gray" opacity={0.2} />
+      </Center>
+      <Text align="center" weight={"bold"} size={30} pb={70}>
+        You haven't raised ticket yet!
+      </Text>
+    </>
+  );
+
+  //
 
   // rating submit handle form
   const ratingForm = useForm({
@@ -184,6 +234,7 @@ const Support = () => {
                     />
                     <Select
                       data={[
+                        { label: "All", value: "All" },
                         { label: "General", value: "General" },
                         {
                           label: "Account And Security",
@@ -203,12 +254,17 @@ const Support = () => {
                       dropdownPosition="bottom"
                       size="xs"
                       placeholder="Category"
+                      onChange={(e) => setCategory(e!!)}
                     />
                   </Group>
                 </Stack>
               </Group>
             </Box>
-            <ScrollArea h={350}>{collapsed}</ScrollArea>
+            <ScrollArea h={350}>
+              {category.length > 0 && category !== "All"
+                ? filerByCategory
+                : collapsed}
+            </ScrollArea>
           </Box>
 
           {/* Buttons */}
