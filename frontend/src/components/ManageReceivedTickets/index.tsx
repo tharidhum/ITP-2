@@ -13,12 +13,12 @@ export function ReceivedTicketsTable() {
 
 
   // Function to handle search input change
-  const handleSearchInputChange = (event:any) => {
+  const handleSearchInputChange = (event: any) => {
     setSearchQuery(event.target.value);
   };
 
 
-  
+
 
   // specific ticket details
   const [ticketInfo, setTicketInfo] = useState({
@@ -30,7 +30,7 @@ export function ReceivedTicketsTable() {
     subject: "",
     message: "",
     status: "",
-    stakeHolder:"",
+    stakeHolder: "",
 
   });
 
@@ -57,10 +57,27 @@ export function ReceivedTicketsTable() {
     { initialData: [] }
   );
 
-  
+
   // Filter PENDING and COMPLETE tickets
   const pendingTickets = data.filter((ticket: any) => ticket.status === "PENDING");
   const completeTickets = data.filter((ticket: any) => ticket.status === "COMPLETE");
+
+
+  // Filter the data based on the search query
+  const filteredTickets = pendingTickets.filter((ticket: any) => {
+    const ticketId = ticket.ticketId.toLowerCase();
+    const date = new Date(ticket.date).toLocaleDateString("en-CA").toLowerCase();
+    const time = ticket.time.toLowerCase();
+    const stakeHolder = ticket.stakeHolder.toLowerCase();
+    const category = ticket.category.toLowerCase();
+    return (
+      ticketId.includes(searchQuery.toLowerCase()) ||
+      date.includes(searchQuery.toLowerCase()) ||
+      time.includes(searchQuery.toLowerCase()) ||
+      stakeHolder.includes(searchQuery.toLowerCase()) ||
+      category.includes(searchQuery.toLowerCase())
+    );
+  });
 
   //submit response
   const submitTicketResponse = async (values: {
@@ -311,6 +328,8 @@ export function ReceivedTicketsTable() {
               width: '300px', // Increase length
               padding: '10px', // Add margin to the bottom
             }}
+            value={searchQuery}
+            onChange={handleSearchInputChange}
           />
           <Select
             data={[
@@ -363,7 +382,47 @@ export function ReceivedTicketsTable() {
                 <th>CATEGORY</th>
               </tr>
             </thead>
-            <tbody>{pendingRows}</tbody>
+            <tbody>
+              {filteredTickets.length > 0 ? (
+                filteredTickets.map((ticket:any) => (
+                  <tr
+                    key={ticket._id}
+                    onClick={() => {
+                      // ... (existing code for opening ticket modal)
+                    }}
+                  >
+                    <td>
+                      {
+                        <Badge
+                          color={ticket.status === "COMPLETE" ? "teal" : "orange"}
+                          variant="light"
+                        >
+                          {ticket.status}
+                        </Badge>
+                      }
+                    </td>
+                    <td>{ticket.ticketId}</td>
+                    <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
+                    <td>{ticket.time}</td>
+                    <td>{ticket.stakeHolder}</td>
+                    <td>{ticket.category}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6}>
+                    <>
+                      <Center mt={60}>
+                        <IconTicketOff size={100} color="gray" opacity={0.2} />
+                      </Center>
+                      <Text align="center" weight={"bold"} size={30} pb={70}>
+                        No raised tickets yet!
+                      </Text>
+                    </>
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </Table>
         </ScrollArea>
       </div>
