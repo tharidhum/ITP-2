@@ -218,7 +218,7 @@ const AdminDashboardHeader = () => {
       </div>
       <Container size="md">
         <Tabs
-          defaultValue="Reserved Tickets"
+          defaultValue="Received Tickets"
           variant="outline"
           classNames={{
             root: classes.tabs,
