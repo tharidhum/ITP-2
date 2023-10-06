@@ -107,62 +107,6 @@ export function ReceivedTicketsTable() {
         });
       });
   }
-
-  // generate tickets table body for pending tickets
-  const pendingRows =
-    pendingTickets.length > 0 ? (
-      pendingTickets.map((tickets: any) => (
-        <tr
-          key={tickets._id}
-          onClick={() => {
-            setTicketInfo({
-              _id: tickets._id,
-              ticketId: tickets.ticketId,
-              date: new Date(tickets.date).toLocaleDateString("en-CA"),
-              time: tickets.time,
-              category: tickets.category,
-              subject: tickets.subject,
-              message: tickets.message,
-              status: "NEW",
-              stakeHolder: tickets.stakeHolder,
-            });
-
-            // open ticket modal
-            setTicketOpened(true);
-          }}
-        >
-          <td>
-            {
-              <Badge
-                color={tickets.status === "COMPLETE" ? "teal" : "orange"}
-                variant="light"
-              >
-                {tickets.status}
-              </Badge>
-            }
-          </td>
-          <td>{tickets.ticketId}</td>
-          <td>{new Date(tickets.date).toLocaleDateString("en-CA")}</td>
-          <td>{tickets.time}</td>
-          <td>{tickets.stakeHolder}</td>
-          <td>{tickets.category}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={6}>
-          <>
-            <Center mt={60}>
-              <IconTicketOff size={100} color="gray" opacity={0.2} />
-            </Center>
-            <Text align="center" weight={"bold"} size={30} pb={70}>
-              No raised tickets yet!
-            </Text>
-          </>
-        </td>
-      </tr>
-    );
-
   //generate table for completed tickets
   const completeRows =
     completeTickets.length > 0 ? (
