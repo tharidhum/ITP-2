@@ -170,12 +170,16 @@ export const ManageFAQ = () => {
                     />
                     <Select
                         data={[
-                            { label: "CUSTOMER", value: "CUSTOMER" },
+                            { label: "GENERAL", value: "GENERAL" },
                             {
-                                label: "SUPPLIER",
-                                value: "SUPPLIER",
+                                label: "ACCOUNT AND SECURITY",
+                                value: "ACCOUNT AND SECURITY",
                             },
-                            { label: "ARTISAN", value: "ARTISAN" },
+                            { label: "DELIVERY", value: "DELIVERY" },
+                            { label: "ORDER AND SHOPPING", value: "ORDER AND SHOPPING" },
+                            { label: "PRODUCT AND INVENTORY", value: "PRODUCT AND INVENTORY" },
+
+
                         ]}
                         {...editForm.getInputProps("category")}
                         searchable
@@ -216,12 +220,16 @@ export const ManageFAQ = () => {
                     />
                     <Select
                         data={[
-                            { label: "CUSTOMER", value: "CUSTOMER" },
+                            { label: "GENERAL", value: "GENERAL" },
                             {
-                                label: "SUPPLIER",
-                                value: "SUPPLIER",
+                                label: "ACCOUNT AND SECURITY",
+                                value: "ACCOUNT AND SECURITY",
                             },
-                            { label: "ARTISAN", value: "ARTISAN" },
+                            { label: "DELIVERY", value: "DELIVERY" },
+                            { label: "ORDER AND SHOPPING", value: "ORDER AND SHOPPING" },
+                            { label: "PRODUCT AND INVENTORY", value: "PRODUCT AND INVENTORY" },
+
+
                         ]}
                         {...addForm.getInputProps("category")}
                         searchable
