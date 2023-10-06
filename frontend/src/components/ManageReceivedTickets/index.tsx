@@ -270,7 +270,6 @@ export function ReceivedTicketsTable() {
             />
           </Modal.Body>
 
-
           <Modal.Body>
             {/* ... (other fields) */}
             <Group spacing={"xs"}>
@@ -384,11 +383,24 @@ export function ReceivedTicketsTable() {
             </thead>
             <tbody>
               {filteredTickets.length > 0 ? (
-                filteredTickets.map((ticket:any) => (
+                filteredTickets.map((ticket: any) => (
                   <tr
                     key={ticket._id}
                     onClick={() => {
-                      // ... (existing code for opening ticket modal)
+                      setTicketInfo({
+                        _id: ticket._id,
+                        ticketId: ticket.ticketId,
+                        date: new Date(ticket.date).toLocaleDateString("en-CA"),
+                        time: ticket.time,
+                        category: ticket.category,
+                        subject: ticket.subject,
+                        message: ticket.message,
+                        status: "NEW",
+                        stakeHolder: ticket.stakeHolder,
+                      });
+
+                      // open ticket modal
+                      setTicketOpened(true);
                     }}
                   >
                     <td>
