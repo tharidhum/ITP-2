@@ -9,7 +9,16 @@ import { showNotification } from '@mantine/notifications';
 
 export function ReceivedTicketsTable() {
   const [ticketOpened, setTicketOpened] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
+
+  // Function to handle search input change
+  const handleSearchInputChange = (event:any) => {
+    setSearchQuery(event.target.value);
+  };
+
+
+  
 
   // specific ticket details
   const [ticketInfo, setTicketInfo] = useState({
@@ -21,6 +30,8 @@ export function ReceivedTicketsTable() {
     subject: "",
     message: "",
     status: "",
+    stakeHolder:"",
+
   });
 
   //   ticket response submit form
@@ -46,6 +57,7 @@ export function ReceivedTicketsTable() {
     { initialData: [] }
   );
 
+  
   // Filter PENDING and COMPLETE tickets
   const pendingTickets = data.filter((ticket: any) => ticket.status === "PENDING");
   const completeTickets = data.filter((ticket: any) => ticket.status === "COMPLETE");
@@ -95,6 +107,7 @@ export function ReceivedTicketsTable() {
               subject: tickets.subject,
               message: tickets.message,
               status: "NEW",
+              stakeHolder: tickets.stakeHolder,
             });
 
             // open ticket modal
@@ -114,6 +127,7 @@ export function ReceivedTicketsTable() {
           <td>{tickets.ticketId}</td>
           <td>{new Date(tickets.date).toLocaleDateString("en-CA")}</td>
           <td>{tickets.time}</td>
+          <td>{tickets.stakeHolder}</td>
           <td>{tickets.category}</td>
         </tr>
       ))
@@ -152,6 +166,7 @@ export function ReceivedTicketsTable() {
           <td>{tickets.ticketId}</td>
           <td>{new Date(tickets.date).toLocaleDateString("en-CA")}</td>
           <td>{tickets.time}</td>
+          <td>{tickets.stakeHolder}</td>
           <td>{tickets.category}</td>
         </tr>
       ))
@@ -212,6 +227,13 @@ export function ReceivedTicketsTable() {
               label={"Category"}
               readOnly
               value={ticketInfo.category}
+            />
+            <TextInput
+              mt={20}
+              mb={10}
+              label={"StakeHolder type"}
+              readOnly
+              value={ticketInfo.stakeHolder}
             />
             <TextInput
               mt={20}
@@ -337,7 +359,7 @@ export function ReceivedTicketsTable() {
                 <th>TICKET ID</th>
                 <th>DATE</th>
                 <th>TIMER</th>
-                {/* <th>STAKEHOLDER TYPE</th> */}
+                <th>STAKEHOLDER TYPE</th>
                 <th>CATEGORY</th>
               </tr>
             </thead>
@@ -416,7 +438,7 @@ export function ReceivedTicketsTable() {
                 <th>TICKET ID</th>
                 <th>DATE</th>
                 <th>TIMER</th>
-                {/* <th>STAKEHOLDER TYPE</th> */}
+                <th>STAKEHOLDER TYPE</th>
                 <th>CATEGORY</th>
               </tr>
             </thead>
