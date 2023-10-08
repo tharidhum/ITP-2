@@ -9,16 +9,32 @@ import { showNotification } from '@mantine/notifications';
 
 export function ReceivedTicketsTable() {
   const [ticketOpened, setTicketOpened] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');//search state for new received ticket table
+  const [searchQueryCompleted, setSearchQueryCompleted] = useState(''); // search state for completed ticket table
+  const [selectedStakeholderType, setSelectedStakeholderType] = useState(""); // selected stakeholder type
+  const [selectedStakeholderTypeCompleted, setSelectedStakeholderTypeCompleted] = useState(""); // selected stakeholder type for completed tickets
 
 
-  // Function to handle search input change
+  // Function to handle search input change for new received tickets
   const handleSearchInputChange = (event: any) => {
     setSearchQuery(event.target.value);
   };
 
 
+  // Function to handle search input change for completed tickets
+  const handleSearchInputChangeCompleted = (event: any) => {
+    setSearchQueryCompleted(event.target.value);
+  };
 
+  // Function to handle stakeholder type selection for new received tickets
+  const handleStakeholderTypeSelect = (value: any) => {
+    setSelectedStakeholderType(value === "ALL" ? "" : value);
+  };
+
+  // Function to handle stakeholder type selection for completed tickets
+  const handleStakeholderTypeSelectCompleted = (value: any) => {
+    setSelectedStakeholderTypeCompleted(value === "ALL" ? "" : value);
+  };
 
   // specific ticket details
   const [ticketInfo, setTicketInfo] = useState({
@@ -63,21 +79,45 @@ export function ReceivedTicketsTable() {
   const completeTickets = data.filter((ticket: any) => ticket.status === "COMPLETE");
 
 
-  // Filter the data based on the search query
-  const filteredTickets = pendingTickets.filter((ticket: any) => {
-    const ticketId = ticket.ticketId.toLowerCase();
-    const date = new Date(ticket.date).toLocaleDateString("en-CA").toLowerCase();
-    const time = ticket.time.toLowerCase();
-    const stakeHolder = ticket.stakeHolder.toLowerCase();
-    const category = ticket.category.toLowerCase();
-    return (
-      ticketId.includes(searchQuery.toLowerCase()) ||
-      date.includes(searchQuery.toLowerCase()) ||
-      time.includes(searchQuery.toLowerCase()) ||
-      stakeHolder.includes(searchQuery.toLowerCase()) ||
-      category.includes(searchQuery.toLowerCase())
-    );
-  });
+  // Filter the data based on the search query and selected stakeholder type for new received tickets
+  const filteredTickets = pendingTickets
+    .filter((ticket: any) =>
+      selectedStakeholderType === "ALL" || ticket.stakeHolder.toLowerCase().includes(selectedStakeholderType.toLowerCase())
+    )
+    .filter((ticket: any) => {
+      const ticketId = ticket.ticketId.toLowerCase();
+      const date = new Date(ticket.date)
+        .toLocaleDateString("en-CA")
+        .toLowerCase();
+      const time = ticket.time.toLowerCase();
+      const category = ticket.category.toLowerCase();
+      return (
+        ticketId.includes(searchQuery.toLowerCase()) ||
+        date.includes(searchQuery.toLowerCase()) ||
+        time.includes(searchQuery.toLowerCase()) ||
+        category.includes(searchQuery.toLowerCase())
+      );
+    });
+
+  // Filter the data based on the search query and selected stakeholder type for completed tickets
+  const filteredCompleteTickets = completeTickets
+    .filter((ticket: any) =>
+      selectedStakeholderTypeCompleted === "ALL" || ticket.stakeHolder.toLowerCase().includes(selectedStakeholderTypeCompleted.toLowerCase())
+    )
+    .filter((ticket: any) => {
+      const ticketId = ticket.ticketId.toLowerCase();
+      const date = new Date(ticket.date)
+        .toLocaleDateString("en-CA")
+        .toLowerCase();
+      const time = ticket.time.toLowerCase();
+      const category = ticket.category.toLowerCase();
+      return (
+        ticketId.includes(searchQueryCompleted.toLowerCase()) ||
+        date.includes(searchQueryCompleted.toLowerCase()) ||
+        time.includes(searchQueryCompleted.toLowerCase()) ||
+        category.includes(searchQueryCompleted.toLowerCase())
+      );
+    });
 
   //submit response
   const submitTicketResponse = async (values: {
@@ -107,101 +147,6 @@ export function ReceivedTicketsTable() {
         });
       });
   }
-
-  // generate tickets table body for pending tickets
-  const pendingRows =
-    pendingTickets.length > 0 ? (
-      pendingTickets.map((tickets: any) => (
-        <tr
-          key={tickets._id}
-          onClick={() => {
-            setTicketInfo({
-              _id: tickets._id,
-              ticketId: tickets.ticketId,
-              date: new Date(tickets.date).toLocaleDateString("en-CA"),
-              time: tickets.time,
-              category: tickets.category,
-              subject: tickets.subject,
-              message: tickets.message,
-              status: "NEW",
-              stakeHolder: tickets.stakeHolder,
-            });
-
-            // open ticket modal
-            setTicketOpened(true);
-          }}
-        >
-          <td>
-            {
-              <Badge
-                color={tickets.status === "COMPLETE" ? "teal" : "orange"}
-                variant="light"
-              >
-                {tickets.status}
-              </Badge>
-            }
-          </td>
-          <td>{tickets.ticketId}</td>
-          <td>{new Date(tickets.date).toLocaleDateString("en-CA")}</td>
-          <td>{tickets.time}</td>
-          <td>{tickets.stakeHolder}</td>
-          <td>{tickets.category}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={6}>
-          <>
-            <Center mt={60}>
-              <IconTicketOff size={100} color="gray" opacity={0.2} />
-            </Center>
-            <Text align="center" weight={"bold"} size={30} pb={70}>
-              No raised tickets yet!
-            </Text>
-          </>
-        </td>
-      </tr>
-    );
-
-  //generate table for completed tickets
-  const completeRows =
-    completeTickets.length > 0 ? (
-      completeTickets.map((tickets: any) => (
-        <tr
-          key={tickets._id}
-        >
-          <td>
-            {
-              <Badge
-                color={tickets.status === "COMPLETE" ? "teal" : "orange"}
-                variant="light"
-              >
-                {tickets.status}
-              </Badge>
-            }
-          </td>
-          <td>{tickets.ticketId}</td>
-          <td>{new Date(tickets.date).toLocaleDateString("en-CA")}</td>
-          <td>{tickets.time}</td>
-          <td>{tickets.stakeHolder}</td>
-          <td>{tickets.category}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={6}>
-          <>
-            <Center mt={50}>
-              <IconTicketOff size={100} color="gray" opacity={0.2} />
-            </Center>
-            <Text align="center" weight={"bold"} size={30} pb={70}>
-              NO completed tickets yet!
-            </Text>
-          </>
-        </td>
-      </tr>
-    );
-
 
   return (
     <>
@@ -324,7 +269,7 @@ export function ReceivedTicketsTable() {
             placeholder="Search..."
             size="xs"
             style={{
-              width: '300px', // Increase length
+              width: '400px', // Increase length
               padding: '10px', // Add margin to the bottom
             }}
             value={searchQuery}
@@ -332,41 +277,18 @@ export function ReceivedTicketsTable() {
           />
           <Select
             data={[
-              { label: "CUSTOMER", value: "CUSTOMER" },
-              {
-                label: "SUPPLIER",
-                value: "SUPPLIER",
-              },
+              { label: "ALL", value: "ALL" },
+              { label: "SELLER", value: "SELLER" },
+              { label: "BUYER", value: "BUYER" },
               { label: "ARTISAN", value: "ARTISAN" },
             ]}
             searchable
             dropdownPosition="bottom"
             size="xs"
             placeholder="STAKEHOLDER TYPE"
-          />
-
-          <Select
-            data={[
-              { label: "PENDING", value: "PENDING" },
-              {
-                label: "COMPLETE",
-                value: "COMPLETE",
-              },
-            ]}
-            searchable
-            dropdownPosition="bottom"
-            size="xs"
-            placeholder="TICKET STATUS"
-          />
-
-          <Select
-            data={[
-
-            ]}
-            searchable
-            dropdownPosition="bottom"
-            size="xs"
-            placeholder="Raised Date"
+            value={selectedStakeholderType}
+            onChange={handleStakeholderTypeSelect}
+            style={{ marginLeft: "260px" }}
           />
         </Group>
         <ScrollArea h={350}>
@@ -447,54 +369,40 @@ export function ReceivedTicketsTable() {
           type="submit"
           radius={30}
           style={{ backgroundColor: "#ffbb38", marginTop: "1px", marginLeft: "650px" }}
-
         >
           Backup all Completed Tickets
         </Button>
         <Group spacing={"md"}>
+          {/* Add search input for completed tickets */}
           <TextInput
             radius={20}
             icon={<IconSearch size={15} />}
             placeholder="Search..."
             size="xs"
             style={{
-              width: '300px', // Increase length
+              width: '400px', // Increase length
               padding: '10px', // Add margin to the bottom
             }}
+            value={searchQueryCompleted}
+            onChange={handleSearchInputChangeCompleted}
           />
           <Select
             data={[
-              { label: "CUSTOMER", value: "CUSTOMER" },
-              {
-                label: "SUPPLIER",
-                value: "SUPPLIER",
-              },
+              { label: "ALL", value: "ALL" },
+              { label: "SELLER", value: "SELLER" },
+              { label: "BUYER", value: "BUYER" },
               { label: "ARTISAN", value: "ARTISAN" },
             ]}
             searchable
             dropdownPosition="bottom"
             size="xs"
             placeholder="STAKEHOLDER TYPE"
+            value={selectedStakeholderTypeCompleted}
+            onChange={handleStakeholderTypeSelectCompleted}
           />
 
           <Select
-            data={[
-              { label: "PENDING", value: "PENDING" },
-              {
-                label: "COMPLETE",
-                value: "COMPLETE",
-              },
-            ]}
-            searchable
-            dropdownPosition="bottom"
-            size="xs"
-            placeholder="TICKET STATUS"
-          />
-
-          <Select
-            data={[
-
-            ]}
+            data={[]}
             searchable
             dropdownPosition="bottom"
             size="xs"
@@ -513,7 +421,60 @@ export function ReceivedTicketsTable() {
                 <th>CATEGORY</th>
               </tr>
             </thead>
-            <tbody>{completeRows}</tbody>
+            <tbody>
+              {filteredCompleteTickets.length > 0 ? (
+                filteredCompleteTickets.map((ticket: any) => (
+                  <tr
+                    key={ticket._id}
+                    onClick={() => {
+                      setTicketInfo({
+                        _id: ticket._id,
+                        ticketId: ticket.ticketId,
+                        date: new Date(ticket.date).toLocaleDateString("en-CA"),
+                        time: ticket.time,
+                        category: ticket.category,
+                        subject: ticket.subject,
+                        message: ticket.message,
+                        status: "NEW",
+                        stakeHolder: ticket.stakeHolder,
+                      });
+
+                      // open ticket modal
+                      setTicketOpened(true);
+                    }}
+                  >
+                    <td>
+                      {
+                        <Badge
+                          color={ticket.status === "COMPLETE" ? "teal" : "orange"}
+                          variant="light"
+                        >
+                          {ticket.status}
+                        </Badge>
+                      }
+                    </td>
+                    <td>{ticket.ticketId}</td>
+                    <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
+                    <td>{ticket.time}</td>
+                    <td>{ticket.stakeHolder}</td>
+                    <td>{ticket.category}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6}>
+                    <>
+                      <Center mt={60}>
+                        <IconTicketOff size={100} color="gray" opacity={0.2} />
+                      </Center>
+                      <Text align="center" weight={"bold"} size={30} pb={70}>
+                        No raised tickets yet!
+                      </Text>
+                    </>
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </Table>
         </ScrollArea>
       </div>

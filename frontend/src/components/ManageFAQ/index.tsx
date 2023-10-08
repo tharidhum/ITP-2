@@ -1,4 +1,4 @@
-import { Accordion, Box, Button, Center, Group, Modal, ScrollArea, Select, Text, TextInput } from "@mantine/core"
+import { Accordion, Box, Button, Center, Group, Modal, ScrollArea, Select, Text, TextInput,Textarea } from "@mantine/core"
 import { showNotification, updateNotification } from "@mantine/notifications";
 import FAQAPI from "../../API/faq.api";
 import { IconCheck, IconTicketOff, IconX } from "@tabler/icons-react";
@@ -240,9 +240,10 @@ export const ManageFAQ = () => {
                         label="CATEGORY"
                         required
                     />
-                    <TextInput
+                    <Textarea
                         placeholder="Enter Answer"
                         label="Answer"
+                        maxRows={4}
                         {...addForm.getInputProps("answer")}
                         radius="lg"
                         withAsterisk
