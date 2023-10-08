@@ -36,6 +36,9 @@ const RaisedTicketTable = () => {
   // open ticket window
   const [ticketOpened, setTicketOpened] = useState(false);
 
+  // search query state
+  const[search,setSearch] = useState('');
+
   // specific ticket details
   const [ticketInfo, setTicketInfo] = useState({
     ticketId: "",
@@ -208,6 +211,7 @@ const RaisedTicketTable = () => {
       </tr>
     );
 
+    console.log(search)
   return (
     <>
       {/* Ticket Modal */}
@@ -301,6 +305,7 @@ const RaisedTicketTable = () => {
                 radius={30}
                 size="xs"
                 placeholder="Search..."
+                onChange={(e) =>setSearch(e.target.value)}
               />
               {/* Raised ticket table */}
               <Select
