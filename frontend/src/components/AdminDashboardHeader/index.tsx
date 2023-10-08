@@ -28,6 +28,7 @@ import {
 } from "@tabler/icons-react";
 import { ReceivedTicketsTable } from "../ManageReceivedTickets";
 import { ManageFAQ } from "../ManageFAQ";
+import { ReceivedTicketsTableForReportGeneration } from "../GenerateReport";
 import Logo from "../../assets/logo1.png"
 
 
@@ -233,6 +234,9 @@ const AdminDashboardHeader = () => {
           </Tabs.Panel>
           <Tabs.Panel value="Manage FAQ's">
             <ManageFAQ />
+          </Tabs.Panel>
+          <Tabs.Panel value="Generate Reports">
+            <ReceivedTicketsTableForReportGeneration />
           </Tabs.Panel>
         </Tabs>
       </Container>
