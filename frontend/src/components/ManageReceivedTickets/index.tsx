@@ -409,7 +409,7 @@ export function ReceivedTicketsTable() {
             placeholder="Raised Date"
           />
         </Group>
-        <ScrollArea h={350}>
+        <ScrollArea h={300}>
           <Table striped highlightOnHover withBorder withColumnBorders>
             <thead>
               <tr>

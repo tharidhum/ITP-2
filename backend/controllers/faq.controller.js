@@ -35,7 +35,6 @@ export const addFaq = async (req, res) => {
 export const deleteFAQ = async (req, res) => {
   const _id = req.params.id;
 
-  console.log(_id);
   try {
     const deletedFAQ = await Faq.findByIdAndDelete(_id);
     res.status(200).json({ message: "FAQ deleted", deletedFAQ })
