@@ -10,12 +10,13 @@ import {
   Text,
   TextInput,
   Textarea,
-  Title,
+  Title
 } from "@mantine/core";
 import { IconSearch, IconTicketOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import TicketAPI from "../../API/tickets";
+import {  DateInput} from '@mantine/dates';
 
 const RaisedTicketTable = () => {
   // get user details from the localstorage
@@ -51,29 +52,32 @@ const RaisedTicketTable = () => {
   });
 
   // sort by
-  const [sort, setSort] = useState("");
+  const [dateSort, setDateSort] = useState<Date>();
 
-  // // sort by date
-  // const sortByDate = () => {
-  //   const sortedData = data.sort((a: any, b: any) => {
-  //     return new Date(a.date).getTime() - new Date(a.date).getTime();
-  //   });
+// format date
+  const generateFormatDate = (dbDate : any) => {
+    const sortDate = new Date(dateSort!!).toLocaleDateString("en-CA");
+    const ticketDbDate = new Date(dbDate).toLocaleDateString("en-CA")
 
-  //   data = sortedData;
-  // };
+    console.log(sortDate === ticketDbDate);
+
+    return sortDate === ticketDbDate;
+  };
 
   // generate tickets table body
   const rows =
     data.length > 0 ? (
       data.map((ticket: any) => {
         if (
-          (search.length === 0 && status.toLowerCase() === "all") ||
+          
+          ((dateSort !== null || dateSort !== undefined) && generateFormatDate(ticket.date))  ||
+          ((search.length === 0 && dateSort === null || dateSort === undefined) && status.toLowerCase() === "all") ||
           (search.length > 0 &&
             ticket.ticketId.toLowerCase().includes(search.toLowerCase())) ||
           (search.length > 0 &&
             ticket.category.toLowerCase().includes(search.toLowerCase())) ||
           (search.length === 0 &&
-            ticket.status.toLowerCase() === status.toLowerCase())
+            ticket.status.toLowerCase() === status.toLowerCase()) 
         ) {
           return (
             <tr
@@ -238,16 +242,7 @@ const RaisedTicketTable = () => {
             </Group>
             <Group position="right">
               <Text size={15}>Sort By:</Text>
-              <Select
-                data={[
-                  { label: "TIME", value: "TIME" },
-                  { label: "DATE", value: "DATE" },
-                ]}
-                placeholder="Raised Date"
-                size="xs"
-                value={status}
-                onChange={(e) => setSort(e!!)}
-              />
+              <DateInput clearable placeholder="Raised Date" valueFormat="YYYY MM DD" size="xs" onChange={(e) => setDateSort(e!!)}/>
             </Group>
           </Group>
         </Box>
