@@ -16,6 +16,7 @@ import {
   Modal,
   Rating,
   Textarea,
+  LoadingOverlay,
 } from "@mantine/core";
 import {
   IconCheck,
@@ -60,44 +61,19 @@ const Support = () => {
   const [ticketForm, setTicketForm] = useState(false);
 
   // select Category
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("All");
 
-  // generate collapsed
-  const collapsed = Array.isArray(data) ? (
-    data.map((item: any, index: any) => (
-      <Accordion
-        variant="separated"
-        mt={10}
-        transitionDuration={500}
-        key={item.question}
-      >
-        <Accordion.Item value={item.question}>
-          <Accordion.Control>
-            <Group spacing={"xs"}>
-              <Text size={15} weight={"bold"}>{`${item.question}`}</Text>
-              <Text color="dimmed" size={15}>{`( ${item.category} )`}</Text>
-            </Group>
-          </Accordion.Control>
-          <Accordion.Panel>
-            {<Text size={15}>{item.answer}</Text>}
-          </Accordion.Panel>
-        </Accordion.Item>
-      </Accordion>
-    ))
-  ) : (
-    <>
-      <Center mt={60}>
-        <IconMessage2Off size={100} color="gray" opacity={0.2} />
-      </Center>
-      <Text align="center" weight={"bold"} size={30} pb={70}>
-        There are no FAQs!
-      </Text>
-    </>
-  );
-
-  const filerByCategory = Array.isArray(data) ? (
+  // search state management
+  const [search, setSearch] = useState("");
+  
+  const rowsWithFilters = Array.isArray(data) ? (
     data.map((item: any, index: any) => {
-      if (item.category.toLowerCase() === category.toLowerCase()) {
+      if (
+        item.category.toLowerCase() === category.toLowerCase() ||
+        (search.length > 0 && item.question.toLowerCase().includes(search)) ||
+        (search.length > 0 && item.category.toLowerCase().includes(search)) ||
+        (search.length <= 0 && category === "All")
+      ) {
         return (
           <Accordion
             variant="separated"
@@ -122,17 +98,11 @@ const Support = () => {
     })
   ) : (
     <>
-      <Center mt={60}>
-        <IconTicketOff size={100} color="gray" opacity={0.2} />
-      </Center>
-      <Text align="center" weight={"bold"} size={30} pb={70}>
-        You haven't raised ticket yet!
-      </Text>
+      <LoadingOverlay visible/>
     </>
   );
 
   //
-
   // rating submit handle form
   const ratingForm = useForm({
     validateInputOnChange: true,
@@ -231,6 +201,7 @@ const Support = () => {
                       icon={<IconSearch size={15} />}
                       placeholder="Search..."
                       size="xs"
+                      onChange={(e) => setSearch(e.target.value)}
                     />
                     <Select
                       data={[
@@ -253,6 +224,7 @@ const Support = () => {
                       searchable
                       dropdownPosition="bottom"
                       size="xs"
+                      value={category}
                       placeholder="Category"
                       onChange={(e) => setCategory(e!!)}
                     />
@@ -260,11 +232,7 @@ const Support = () => {
                 </Stack>
               </Group>
             </Box>
-            <ScrollArea h={350}>
-              {category.length > 0 && category !== "All"
-                ? filerByCategory
-                : collapsed}
-            </ScrollArea>
+            <ScrollArea h={350}>{rowsWithFilters}</ScrollArea>
           </Box>
 
           {/* Buttons */}

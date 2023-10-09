@@ -10,19 +10,20 @@ import {
   Text,
   TextInput,
   Textarea,
-  Title,
+  Title
 } from "@mantine/core";
 import { IconSearch, IconTicketOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import TicketAPI from "../../API/tickets";
+import {  DateInput} from '@mantine/dates';
 
 const RaisedTicketTable = () => {
   // get user details from the localstorage
   const user = JSON.parse(localStorage.getItem("user")!!);
 
   // ticket table tickets filter by status
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("ALL");
 
   // user react query to fetch the the raised ticket data
   const {
@@ -36,6 +37,9 @@ const RaisedTicketTable = () => {
   // open ticket window
   const [ticketOpened, setTicketOpened] = useState(false);
 
+  // search query state
+  const [search, setSearch] = useState("");
+
   // specific ticket details
   const [ticketInfo, setTicketInfo] = useState({
     ticketId: "",
@@ -46,65 +50,35 @@ const RaisedTicketTable = () => {
     message: "",
     status: "",
   });
+
+  // sort by
+  const [dateSort, setDateSort] = useState<Date>();
+
+// format date
+  const generateFormatDate = (dbDate : any) => {
+    const sortDate = new Date(dateSort!!).toLocaleDateString("en-CA");
+    const ticketDbDate = new Date(dbDate).toLocaleDateString("en-CA")
+
+    console.log(sortDate === ticketDbDate);
+
+    return sortDate === ticketDbDate;
+  };
+
   // generate tickets table body
   const rows =
     data.length > 0 ? (
-      data.map((ticket: any) => (
-        <tr
-          key={ticket._id}
-          onClick={() => {
-            setTicketInfo({
-              ticketId: ticket.ticketId,
-              date: new Date(ticket.date).toLocaleDateString("en-CA"),
-              time: ticket.time,
-              category: ticket.category,
-              subject: ticket.subject,
-              message: ticket.message,
-              status: ticket.status,
-            });
-
-            // open ticket modal
-            setTicketOpened(true);
-          }}
-          style={{cursor : "pointer"}}
-        >
-          <td>
-            {
-              <Badge
-                color={ticket.status === "COMPLETE" ? "teal" : "orange"}
-                variant="light"
-              >
-                {ticket.status}
-              </Badge>
-            }
-          </td>
-          <td>{ticket.ticketId}</td>
-          <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
-          <td>{ticket.time}</td>
-          <td>{ticket.category}</td>
-          <td>{ticket.subject}</td>
-        </tr>
-      ))
-    ) : (
-      <tr>
-        <td colSpan={6}>
-          <>
-            <Center mt={60}>
-              <IconTicketOff size={100} color="gray" opacity={0.2} />
-            </Center>
-            <Text align="center" weight={"bold"} size={30} pb={70}>
-              You haven't raised ticket yet!
-            </Text>
-          </>
-        </td>
-      </tr>
-    );
-
-  // filtering pending tickets only
-  const pendingTickets =
-    data.length > 0 ? (
       data.map((ticket: any) => {
-        if (ticket.status === "PENDING") {
+        if (
+          
+          ((dateSort !== null || dateSort !== undefined) && generateFormatDate(ticket.date))  ||
+          ((search.length === 0 && dateSort === null || dateSort === undefined) && status.toLowerCase() === "all") ||
+          (search.length > 0 &&
+            ticket.ticketId.toLowerCase().includes(search.toLowerCase())) ||
+          (search.length > 0 &&
+            ticket.category.toLowerCase().includes(search.toLowerCase())) ||
+          (search.length === 0 &&
+            ticket.status.toLowerCase() === status.toLowerCase()) 
+        ) {
           return (
             <tr
               key={ticket._id}
@@ -122,64 +96,14 @@ const RaisedTicketTable = () => {
                 // open ticket modal
                 setTicketOpened(true);
               }}
+              style={{ cursor: "pointer" }}
             >
               <td>
                 {
-                  <Badge color={"orange"} variant="light">
-                    {ticket.status}
-                  </Badge>
-                }
-              </td>
-              <td>{ticket.ticketId}</td>
-              <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
-              <td>{ticket.time}</td>
-              <td>{ticket.category}</td>
-              <td>{ticket.subject}</td>
-            </tr>
-          );
-        }
-      })
-    ) : (
-      <tr>
-        <td colSpan={6}>
-          <>
-            <Center mt={60}>
-              <IconTicketOff size={100} color="gray" opacity={0.2} />
-            </Center>
-            <Text align="center" weight={"bold"} size={30} pb={70}>
-              You haven't raised ticket yet!
-            </Text>
-          </>
-        </td>
-      </tr>
-    );
-
-  // filtering successing tickets only
-  const completeTickets =
-    data.length > 0 ? (
-      data.map((ticket: any) => {
-        if (ticket.status === "COMPLETE") {
-          return (
-            <tr
-              key={ticket._id}
-              onClick={() => {
-                setTicketInfo({
-                  ticketId: ticket.ticketId,
-                  date: new Date(ticket.date).toLocaleDateString("en-CA"),
-                  time: ticket.time,
-                  category: ticket.category,
-                  subject: ticket.subject,
-                  message: ticket.message,
-                  status: ticket.status,
-                });
-
-                // open ticket modal
-                setTicketOpened(true);
-              }}
-            >
-              <td>
-                {
-                  <Badge color={"teal"} variant="light">
+                  <Badge
+                    color={ticket.status === "COMPLETE" ? "teal" : "orange"}
+                    variant="light"
+                  >
                     {ticket.status}
                   </Badge>
                 }
@@ -301,6 +225,7 @@ const RaisedTicketTable = () => {
                 radius={30}
                 size="xs"
                 placeholder="Search..."
+                onChange={(e) => setSearch(e.target.value)}
               />
               {/* Raised ticket table */}
               <Select
@@ -311,21 +236,13 @@ const RaisedTicketTable = () => {
                 ]}
                 placeholder="Ticket Status"
                 size="xs"
-                defaultChecked
+                value={status}
                 onChange={(e) => setStatus(e!!)}
               />
             </Group>
             <Group position="right">
               <Text size={15}>Sort By:</Text>
-              <Select
-                data={[
-                  { label: "TIME", value: "TIME" },
-                  { label: "DATE", value: "DATE" },
-                ]}
-                placeholder="Raised Date"
-                size="xs"
-                value={status}
-              />
+              <DateInput clearable placeholder="Raised Date" valueFormat="YYYY MM DD" size="xs" onChange={(e) => setDateSort(e!!)}/>
             </Group>
           </Group>
         </Box>
@@ -343,13 +260,7 @@ const RaisedTicketTable = () => {
                 <th>ISSUE SUBJECT</th>
               </tr>
             </thead>
-            <tbody>
-              {status === "COMPLETE"
-                ? completeTickets
-                : status === "PENDING"
-                ? pendingTickets
-                : rows}
-            </tbody>
+            <tbody>{rows}</tbody>
           </Table>
         </ScrollArea>
       </Box>
