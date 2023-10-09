@@ -365,13 +365,13 @@ export function ReceivedTicketsTable() {
       {/* completed ticket table */}
       <div style={{ border: "2px solid black", width: "100%", height: "60vh", padding: "10px", marginTop: '50px', marginBottom: "50px" }}>
         <Text fw={700} style={{ textAlign: "center" }}>Completed Tickets</Text>
-        <Button
+        {/* <Button
           type="submit"
           radius={30}
           style={{ backgroundColor: "#ffbb38", marginTop: "1px", marginLeft: "650px" }}
         >
           Backup all Completed Tickets
-        </Button>
+        </Button> */}
         <Group spacing={"md"}>
           {/* Add search input for completed tickets */}
           <TextInput
