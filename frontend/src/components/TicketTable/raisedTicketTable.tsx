@@ -61,8 +61,6 @@ const RaisedTicketTable = () => {
     const sortDate = new Date(dateSort!!).toLocaleDateString("en-CA");
     const ticketDbDate = new Date(dbDate).toLocaleDateString("en-CA");
 
-    console.log(sortDate === ticketDbDate);
-
     return sortDate === ticketDbDate;
   };
 
@@ -71,11 +69,11 @@ const RaisedTicketTable = () => {
     data.length > 0 ? (
       data.map((ticket: any) => {
         if (
-          (search.length > 0 && ticket.ticketId.toLowerCase().includes(search.toLowerCase())) ||
+          ((search.length === 0  && status.toLowerCase() === "all"))||
+          (search.length > 0  && ticket.ticketId.toLowerCase().includes(search.toLowerCase())) ||
           (search.length > 0 && ticket.category.toLowerCase().includes(search.toLowerCase())) ||
-          ((dateSort !== null || dateSort !== undefined) && generateFormatDate(ticket.date)) ||
-          (((search.length === 0 && (dateSort === null) || dateSort === undefined)) && status.toLowerCase() === "all") ||
           (search.length === 0 && ticket.status.toLowerCase() === status.toLowerCase())
+
         ) {
           return (
             <tr
@@ -131,6 +129,66 @@ const RaisedTicketTable = () => {
       </tr>
     );
 
+    const sortByDate =
+    data.length > 0 ? (
+      data.map((ticket: any) => {
+      
+        if (
+          ((dateSort !== null || dateSort !== undefined) && generateFormatDate(ticket.date))
+        ) {
+          return (
+            <tr
+              key={ticket._id}
+              onClick={() => {
+                setTicketInfo({
+                  ticketId: ticket.ticketId,
+                  date: new Date(ticket.date).toLocaleDateString("en-CA"),
+                  time: ticket.time,
+                  category: ticket.category,
+                  subject: ticket.subject,
+                  message: ticket.message,
+                  status: ticket.status,
+                  response: ticket.response,
+                });
+
+                // open ticket modal
+                setTicketOpened(true);
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              <td>
+                {
+                  <Badge
+                    color={ticket.status === "COMPLETE" ? "teal" : "orange"}
+                    variant="light"
+                  >
+                    {ticket.status}
+                  </Badge>
+                }
+              </td>
+              <td>{ticket.ticketId}</td>
+              <td>{new Date(ticket.date).toLocaleDateString("en-CA")}</td>
+              <td>{ticket.time}</td>
+              <td>{ticket.category}</td>
+              <td>{ticket.subject}</td>
+            </tr>
+          );
+        }
+      })
+    ) : (
+      <tr>
+        <td colSpan={6}>
+          <>
+            <Center mt={60}>
+              <IconTicketOff size={100} color="gray" opacity={0.2} />
+            </Center>
+            <Text align="center" weight={"bold"} size={30} pb={70}>
+              You haven't raised ticket yet!
+            </Text>
+          </>
+        </td>
+      </tr>
+    );
   return (
     <>
       {/* Ticket Modal */}
@@ -279,7 +337,7 @@ const RaisedTicketTable = () => {
                 <th>ISSUE SUBJECT</th>
               </tr>
             </thead>
-            <tbody>{rows}</tbody>
+            <tbody>{dateSort ? sortByDate : rows}</tbody>
           </Table>
         </ScrollArea>
       </Box>
