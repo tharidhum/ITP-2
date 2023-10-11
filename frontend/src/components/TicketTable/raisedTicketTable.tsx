@@ -2,6 +2,7 @@ import {
   Badge,
   Box,
   Center,
+  Divider,
   Group,
   Modal,
   ScrollArea,
@@ -10,13 +11,13 @@ import {
   Text,
   TextInput,
   Textarea,
-  Title
+  Title,
 } from "@mantine/core";
 import { IconSearch, IconTicketOff } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import TicketAPI from "../../API/tickets";
-import {  DateInput} from '@mantine/dates';
+import { DateInput } from "@mantine/dates";
 
 const RaisedTicketTable = () => {
   // get user details from the localstorage
@@ -49,15 +50,16 @@ const RaisedTicketTable = () => {
     subject: "",
     message: "",
     status: "",
+    response: "",
   });
 
   // sort by
   const [dateSort, setDateSort] = useState<Date>();
 
-// format date
-  const generateFormatDate = (dbDate : any) => {
+  // format date
+  const generateFormatDate = (dbDate: any) => {
     const sortDate = new Date(dateSort!!).toLocaleDateString("en-CA");
-    const ticketDbDate = new Date(dbDate).toLocaleDateString("en-CA")
+    const ticketDbDate = new Date(dbDate).toLocaleDateString("en-CA");
 
     console.log(sortDate === ticketDbDate);
 
@@ -69,15 +71,11 @@ const RaisedTicketTable = () => {
     data.length > 0 ? (
       data.map((ticket: any) => {
         if (
-          
-          ((dateSort !== null || dateSort !== undefined) && generateFormatDate(ticket.date))  ||
-          ((search.length === 0 && dateSort === null || dateSort === undefined) && status.toLowerCase() === "all") ||
-          (search.length > 0 &&
-            ticket.ticketId.toLowerCase().includes(search.toLowerCase())) ||
-          (search.length > 0 &&
-            ticket.category.toLowerCase().includes(search.toLowerCase())) ||
-          (search.length === 0 &&
-            ticket.status.toLowerCase() === status.toLowerCase()) 
+          (search.length > 0 && ticket.ticketId.toLowerCase().includes(search.toLowerCase())) ||
+          (search.length > 0 && ticket.category.toLowerCase().includes(search.toLowerCase())) ||
+          ((dateSort !== null || dateSort !== undefined) && generateFormatDate(ticket.date)) ||
+          (((search.length === 0 && (dateSort === null) || dateSort === undefined)) && status.toLowerCase() === "all") ||
+          (search.length === 0 && ticket.status.toLowerCase() === status.toLowerCase())
         ) {
           return (
             <tr
@@ -91,6 +89,7 @@ const RaisedTicketTable = () => {
                   subject: ticket.subject,
                   message: ticket.message,
                   status: ticket.status,
+                  response: ticket.response,
                 });
 
                 // open ticket modal
@@ -189,6 +188,20 @@ const RaisedTicketTable = () => {
             readOnly
             value={ticketInfo.message}
           />
+          {/* Admin response */}
+          <Divider mb={-10} mt={30} />
+          <Textarea
+            mt={20}
+            mb={10}
+            minRows={2}
+            maxRows={5}
+            label={"Response"}
+            readOnly
+            value={ticketInfo.response}
+            placeholder={
+              "Here will be display admin response for the ticket. If you see this message, That means admin have not replied to your message yet!"
+            }
+          />
         </Modal.Body>
       </Modal>
       <Box
@@ -242,7 +255,13 @@ const RaisedTicketTable = () => {
             </Group>
             <Group position="right">
               <Text size={15}>Sort By:</Text>
-              <DateInput clearable placeholder="Raised Date" valueFormat="YYYY MM DD" size="xs" onChange={(e) => setDateSort(e!!)}/>
+              <DateInput
+                clearable
+                placeholder="Raised Date"
+                valueFormat="YYYY MM DD"
+                size="xs"
+                onChange={(e) => setDateSort(e!!)}
+              />
             </Group>
           </Group>
         </Box>
